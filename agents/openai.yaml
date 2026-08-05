@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Deck Studio"
+  short_description: "从资料研究到可编辑、可验证、可部署 HTML 演示稿的完整生产流程"
+  default_prompt: "使用 $html-deck-studio 把我的分享主题制作成可编辑、可验证的 16:9 HTML PPT。"

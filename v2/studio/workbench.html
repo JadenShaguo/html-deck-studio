@@ -1,0 +1,393 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HTML Deck Studio V2.0 Workbench</title>
+  <style>
+    :root{
+      --bg:#ecece8;
+      --panel:#fbfbf8;
+      --ink:#24231f;
+      --muted:#77736a;
+      --line:#d8d5cd;
+      --orange:#f46a3b;
+      --orange-soft:#fff0e9;
+      --aqua:#278e84;
+      --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+      --sans:Inter,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%;margin:0;overflow:hidden}
+    body{display:grid;grid-template-columns:minmax(0,1fr) 340px;background:var(--bg);color:var(--ink);font-family:var(--sans)}
+    button,input{font:inherit}
+    .stage{position:relative;min-width:0;padding:18px}
+    .topbar{position:absolute;z-index:5;left:28px;top:28px;display:flex;align-items:center;gap:8px;padding:8px 10px;border:1px solid var(--line);border-radius:999px;background:rgba(251,251,248,.95);box-shadow:0 0 20px rgba(30,30,24,.08)}
+    .topbar b{color:var(--orange);font:800 12px/1 var(--mono);letter-spacing:.08em}
+    .topbar span{max-width:520px;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    iframe{width:100%;height:100%;border:0;border-radius:18px;background:white;box-shadow:0 0 30px rgba(30,30,24,.16)}
+    .sidebar{display:grid;grid-template-rows:auto minmax(0,1fr) auto;background:var(--panel);border-left:1px solid var(--line);min-width:0}
+    .side-head{padding:18px 18px 14px;border-bottom:1px solid var(--line)}
+    .side-head b{display:block;font-size:18px;line-height:1.3}
+    .side-head span{display:block;margin-top:6px;color:var(--muted);font-size:12.5px;line-height:1.45}
+    .section{border-bottom:1px solid var(--line)}
+    .section-title{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;color:var(--orange);font:800 12px/1 var(--mono);letter-spacing:.08em}
+    .section-title span{color:var(--muted);font:600 12px/1 var(--sans);letter-spacing:0}
+    .layer-tree{max-height:360px;overflow:auto;padding:6px 8px 10px}
+    .layer-item{width:100%;display:flex;align-items:center;gap:8px;min-height:32px;border:0;border-radius:8px;background:transparent;color:var(--ink);text-align:left;cursor:pointer;font-size:13px}
+    .layer-item:hover{background:#f1f0eb}
+    .layer-item.active{background:var(--orange-soft);color:var(--orange)}
+    .layer-type{flex:0 0 48px;border:1px solid var(--line);border-radius:999px;padding:2px 6px;color:var(--muted);font:800 10px/1.2 var(--mono);text-align:center}
+    .layer-item.active .layer-type{border-color:var(--orange);color:var(--orange)}
+    .layer-name{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .layer-lock{margin-left:auto;color:var(--muted);font-size:12px}
+    .inspector{padding:12px 14px 14px}
+    .selected-name{margin-bottom:10px;color:var(--muted);font-size:12.5px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+    label{display:grid;gap:4px;color:var(--muted);font:800 11px/1 var(--mono)}
+    input{height:30px;border:1px solid var(--line);border-radius:8px;background:white;color:var(--ink);padding:0 8px;font:650 13px var(--mono)}
+    input:disabled{background:#f1f0eb;color:var(--muted)}
+    .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+    .actions button,.footer button{height:32px;border:1px solid var(--line);border-radius:9px;background:white;color:var(--ink);cursor:pointer;font-size:13px}
+    .actions button:hover,.footer button:hover{border-color:var(--orange);color:var(--orange)}
+    .actions button:disabled,.footer button:disabled{background:#f1f0eb;color:var(--muted);cursor:not-allowed}
+    .footer{display:grid;gap:8px;padding:14px 18px;border-top:1px solid var(--line)}
+    .primary{background:var(--orange)!important;color:white!important;border-color:var(--orange)!important}
+    .status{min-height:20px;color:var(--muted);font-size:12.5px;line-height:1.4}
+    .status.ok{color:var(--aqua)}
+    .status.err{color:var(--orange)}
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <div class="topbar"><b>STUDIO V2.0</b><span id="fileLabel">加载中</span></div>
+    <iframe id="deckFrame" title="HTML Deck Studio 编辑画布"></iframe>
+  </main>
+  <aside class="sidebar">
+    <header class="side-head">
+      <b>HTML Deck Studio</b>
+      <span>本地编辑工作台。公开 HTML 不包含这里的编辑器能力。</span>
+    </header>
+    <div>
+      <section class="section">
+        <div class="section-title">LAYERS <span id="layerCount">0 个图层</span></div>
+        <div class="layer-tree" id="layerTree"></div>
+      </section>
+      <section class="section">
+        <div class="section-title">INSPECTOR <span id="activeSlide">第 1 页</span></div>
+        <div class="inspector">
+          <div class="selected-name" id="selectedName">未选择图层</div>
+          <div class="grid">
+            <label>X <input id="propX" type="number" step="1" disabled></label>
+            <label>Y <input id="propY" type="number" step="1" disabled></label>
+            <label>W <input id="propW" type="number" step="1" disabled></label>
+            <label>H <input id="propH" type="number" step="1" disabled></label>
+          </div>
+          <div class="actions">
+            <button id="toggleLock" type="button" disabled>锁定</button>
+            <button id="resetLayer" type="button" disabled>重置图层</button>
+          </div>
+        </div>
+      </section>
+    </div>
+    <footer class="footer">
+      <button id="saveButton" type="button" class="primary">保存到源码</button>
+      <button id="exportButton" type="button">导出 viewer</button>
+      <button id="reloadButton" type="button">重新加载</button>
+      <div class="status" id="status">准备中</div>
+    </footer>
+  </aside>
+  <script>
+    (function(){
+      var params=new URLSearchParams(location.search);
+      var file=params.get("file")||"source-template.html";
+      var frame=document.getElementById("deckFrame");
+      var fileLabel=document.getElementById("fileLabel");
+      var layerTree=document.getElementById("layerTree");
+      var layerCount=document.getElementById("layerCount");
+      var activeSlideLabel=document.getElementById("activeSlide");
+      var selectedName=document.getElementById("selectedName");
+      var statusBox=document.getElementById("status");
+      var saveButton=document.getElementById("saveButton");
+      var exportButton=document.getElementById("exportButton");
+      var reloadButton=document.getElementById("reloadButton");
+      var toggleLock=document.getElementById("toggleLock");
+      var resetLayer=document.getElementById("resetLayer");
+      var propX=document.getElementById("propX");
+      var propY=document.getElementById("propY");
+      var propW=document.getElementById("propW");
+      var propH=document.getElementById("propH");
+      var selected=null;
+      var dragState=null;
+
+      fileLabel.textContent=file;
+      frame.src="/"+encodeURIComponent(file)+"?embed=studio"+(params.get("page")?"#"+params.get("page"):"");
+
+      function frameWindow(){return frame.contentWindow}
+      function frameDoc(){return frame.contentDocument}
+      function setStatus(message,kind){
+        statusBox.textContent=message;
+        statusBox.className="status"+(kind?" "+kind:"");
+      }
+      function getScale(){
+        var win=frameWindow();
+        if(win&&win.HTMLDeckStudioViewer&&win.HTMLDeckStudioViewer.getScale){return win.HTMLDeckStudioViewer.getScale()}
+        var value=frameWindow().getComputedStyle(frameDoc().documentElement).getPropertyValue("--deck-scale");
+        return Number(value)||1;
+      }
+      function activeSlide(){
+        return frameDoc().querySelector(".slide.active")||frameDoc().querySelector(".slide");
+      }
+      function layerName(layer){
+        return layer.dataset.layerName||((layer.textContent||"").replace(/\s+/g," ").trim().slice(0,32))||layer.dataset.editable||layer.tagName.toLowerCase();
+      }
+      function layerDepth(layer,slide){
+        var depth=0,node=layer.parentElement;
+        while(node&&node!==slide){
+          if(node.matches&&node.matches("[data-editable]")){depth+=1}
+          node=node.parentElement;
+        }
+        return depth;
+      }
+      function layerState(layer){
+        return {
+          x:Number(layer.dataset.studioX||0),
+          y:Number(layer.dataset.studioY||0),
+          width:Number(layer.dataset.studioW||0),
+          height:Number(layer.dataset.studioH||0)
+        };
+      }
+      function applyLayerState(layer,state){
+        layer.dataset.studioX=String(Math.round(state.x||0));
+        layer.dataset.studioY=String(Math.round(state.y||0));
+        layer.style.transform="translate("+(state.x||0)+"px,"+(state.y||0)+"px)";
+        if(state.width){layer.dataset.studioW=String(Math.round(state.width));layer.style.width=state.width+"px";layer.style.maxWidth="none"}
+        if(state.height){layer.dataset.studioH=String(Math.round(state.height));layer.style.height=state.height+"px"}
+        updateInspector();
+      }
+      function isLocked(layer){return layer&&layer.dataset.editLocked==="true"}
+      function selectableFromEvent(event){
+        var slide=activeSlide();
+        var node=event.target;
+        var layers=[];
+        while(node&&node!==slide&&node!==frameDoc()){
+          if(node.matches&&node.matches("[data-editable]")){layers.push(node)}
+          node=node.parentElement;
+        }
+        if(!layers.length){return null}
+        if(event.altKey&&layers.length>1){return layers[1]}
+        return layers.find(function(layer){return !isLocked(layer)})||layers[0];
+      }
+      function setEditableText(enabled){
+        frameDoc().querySelectorAll('[data-editable="text"]').forEach(function(el){
+          el.setAttribute("contenteditable",enabled?"true":"false");
+          el.spellcheck=false;
+        });
+      }
+      function injectStudioStyle(){
+        var doc=frameDoc();
+        if(doc.getElementById("html-deck-studio-workbench-style")){return}
+        var style=doc.createElement("style");
+        style.id="html-deck-studio-workbench-style";
+        style.textContent='[data-studio-selected="true"]{outline:2px solid #f46a3b!important;outline-offset:3px!important}[contenteditable="true"]{outline:1px dashed rgba(244,106,59,.45);outline-offset:2px}';
+        doc.head.appendChild(style);
+      }
+      function clearSelection(){
+        if(selected){selected.removeAttribute("data-studio-selected")}
+        selected=null;
+        updateInspector();
+        syncLayerPanel();
+      }
+      function selectLayer(layer){
+        if(selected){selected.removeAttribute("data-studio-selected")}
+        selected=layer;
+        if(selected){selected.dataset.studioSelected="true"}
+        updateInspector();
+        syncLayerPanel();
+      }
+      function updateInspector(){
+        var enabled=Boolean(selected);
+        [propX,propY,propW,propH,toggleLock,resetLayer].forEach(function(control){control.disabled=!enabled});
+        if(!enabled){
+          selectedName.textContent="未选择图层";
+          [propX,propY,propW,propH].forEach(function(input){input.value=""});
+          return;
+        }
+        var state=layerState(selected);
+        var rect=selected.getBoundingClientRect();
+        var scale=getScale();
+        selectedName.textContent=layerName(selected)+" · "+(selected.dataset.editable||"item");
+        propX.value=Math.round(state.x||0);
+        propY.value=Math.round(state.y||0);
+        propW.value=Math.round(state.width||rect.width/scale);
+        propH.value=Math.round(state.height||rect.height/scale);
+        toggleLock.textContent=isLocked(selected)?"解锁":"锁定";
+        var locked=isLocked(selected);
+        [propX,propY,propW,propH].forEach(function(input){input.disabled=locked});
+      }
+      function renderLayers(){
+        var slide=activeSlide();
+        var layers=[].slice.call(slide.querySelectorAll("[data-editable]"));
+        layerTree.replaceChildren();
+        layerCount.textContent=layers.length+" 个图层";
+        activeSlideLabel.textContent="第 "+((frameWindow().HTMLDeckStudioViewer&&frameWindow().HTMLDeckStudioViewer.getActiveIndex?frameWindow().HTMLDeckStudioViewer.getActiveIndex():0)+1)+" 页";
+        layers.forEach(function(layer){
+          var item=document.createElement("button");
+          item.type="button";
+          item.className="layer-item";
+          item.dataset.layerId=layer.dataset.layerId||"";
+          item.style.paddingLeft=(10+layerDepth(layer,slide)*16)+"px";
+          var type=document.createElement("span");
+          type.className="layer-type";
+          type.textContent=(layer.dataset.editable||"item").toUpperCase();
+          var name=document.createElement("span");
+          name.className="layer-name";
+          name.textContent=layerName(layer);
+          item.appendChild(type);
+          item.appendChild(name);
+          if(isLocked(layer)){
+            var lock=document.createElement("span");
+            lock.className="layer-lock";
+            lock.textContent="锁定";
+            item.appendChild(lock);
+          }
+          item.addEventListener("click",function(){selectLayer(layer)});
+          layerTree.appendChild(item);
+        });
+        syncLayerPanel();
+      }
+      function syncLayerPanel(){
+        var id=selected&&(selected.dataset.layerId||"");
+        layerTree.querySelectorAll(".layer-item").forEach(function(item){
+          item.classList.toggle("active",Boolean(id&&item.dataset.layerId===id));
+        });
+      }
+      function applyInspector(){
+        if(!selected||isLocked(selected)){return}
+        applyLayerState(selected,{
+          x:Number(propX.value)||0,
+          y:Number(propY.value)||0,
+          width:Math.max(80,Number(propW.value)||80),
+          height:Math.max(36,Number(propH.value)||36)
+        });
+      }
+      function bindFrameEvents(){
+        var doc=frameDoc();
+        doc.addEventListener("pointerdown",function(event){
+          var layer=selectableFromEvent(event);
+          if(!layer){clearSelection();return}
+          selectLayer(layer);
+          if(layer.dataset.editable==="text"||isLocked(layer)||event.target.isContentEditable){return}
+          event.preventDefault();
+          var state=layerState(layer);
+          dragState={layer:layer,startX:event.clientX,startY:event.clientY,x:state.x||0,y:state.y||0};
+          doc.addEventListener("pointermove",dragMove);
+          doc.addEventListener("pointerup",dragEnd,{once:true});
+          doc.addEventListener("pointercancel",dragEnd,{once:true});
+        });
+        frameWindow().addEventListener("deck-slide-change",function(){clearSelection();renderLayers()});
+      }
+      function dragMove(event){
+        if(!dragState){return}
+        var scale=getScale();
+        applyLayerState(dragState.layer,{x:dragState.x+(event.clientX-dragState.startX)/scale,y:dragState.y+(event.clientY-dragState.startY)/scale,width:layerState(dragState.layer).width,height:layerState(dragState.layer).height});
+      }
+      function dragEnd(){
+        frameDoc().removeEventListener("pointermove",dragMove);
+        dragState=null;
+      }
+      function cleanForSave(){
+        var doc=frameDoc();
+        doc.querySelectorAll("[data-studio-selected]").forEach(function(el){el.removeAttribute("data-studio-selected")});
+        doc.querySelectorAll("[contenteditable],[spellcheck]").forEach(function(el){
+          el.removeAttribute("contenteditable");
+          el.removeAttribute("spellcheck");
+        });
+        var injected=doc.getElementById("html-deck-studio-workbench-style");
+        if(injected){injected.remove()}
+        [
+          "html-deck-studio-local-actions",
+          "html-deck-studio-edit-toolbar",
+          "html-deck-studio-quick-edit-style",
+          "html-deck-studio-local-runtime",
+          "html-deck-studio-quick-edit-loader"
+        ].forEach(function(id){
+          var node=doc.getElementById(id);
+          if(node){node.remove()}
+        });
+        doc.querySelectorAll("[data-qe-selected]").forEach(function(el){el.removeAttribute("data-qe-selected")});
+        doc.querySelectorAll("[style]").forEach(function(el){if(!el.getAttribute("style").trim()){el.removeAttribute("style")}});
+        var clone=doc.documentElement.cloneNode(true);
+        return "<!doctype html>\n"+clone.outerHTML;
+      }
+      async function saveSource(){
+        try{
+          saveButton.disabled=true;
+          setStatus("保存中");
+          var html=cleanForSave();
+          var response=await fetch("/__studio__/save",{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({html:html})});
+          var result=await response.json();
+          if(!response.ok||!result.ok){throw new Error(result.error||"保存失败")}
+          injectStudioStyle();
+          setEditableText(true);
+          if(selected){selected.dataset.studioSelected="true"}
+          setStatus("已写回源码","ok");
+        }catch(error){
+          setStatus("保存失败："+error.message,"err");
+        }finally{
+          saveButton.disabled=false;
+        }
+      }
+      async function exportViewer(){
+        try{
+          exportButton.disabled=true;
+          setStatus("导出 viewer 中");
+          var response=await fetch("/__studio__/export",{method:"POST",headers:{"Content-Type":"application/json"},body:"{}"});
+          var result=await response.json();
+          if(!response.ok||!result.ok){throw new Error(result.error||"导出失败")}
+          setStatus("已导出："+result.file,"ok");
+        }catch(error){
+          setStatus("导出失败："+error.message,"err");
+        }finally{
+          exportButton.disabled=false;
+        }
+      }
+      frame.addEventListener("load",function(){
+        injectStudioStyle();
+        setEditableText(true);
+        bindFrameEvents();
+        renderLayers();
+        setStatus("工作台已连接","ok");
+      });
+      [propX,propY,propW,propH].forEach(function(input){
+        input.addEventListener("change",applyInspector);
+        input.addEventListener("keydown",function(event){if(event.key==="Enter"){applyInspector();input.blur()}});
+      });
+      toggleLock.addEventListener("click",function(){
+        if(!selected){return}
+        selected.dataset.editLocked=isLocked(selected)?"false":"true";
+        renderLayers();
+        selectLayer(selected);
+      });
+      resetLayer.addEventListener("click",function(){
+        if(!selected){return}
+        selected.style.transform="";
+        selected.style.width="";
+        selected.style.height="";
+        selected.style.maxWidth="";
+        delete selected.dataset.studioX;
+        delete selected.dataset.studioY;
+        delete selected.dataset.studioW;
+        delete selected.dataset.studioH;
+        updateInspector();
+      });
+      saveButton.addEventListener("click",saveSource);
+      exportButton.addEventListener("click",exportViewer);
+      reloadButton.addEventListener("click",function(){frame.contentWindow.location.reload()});
+      fetch("/__studio__/status").then(function(r){return r.json()}).then(function(result){
+        if(result&&result.ok){setStatus("保存服务已连接","ok")}
+      }).catch(function(){setStatus("保存服务未连接","err")});
+    })();
+  </script>
+</body>
+</html>

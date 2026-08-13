@@ -1,0 +1,4 @@
+interface:
+  display_name: "HTML Deck Studio V2.0"
+  short_description: "从资料研究到 source/viewer 双模式 HTML 演示稿的完整生产流程"
+  default_prompt: "使用 $html-deck-studio-v2 把我的分享主题制作成可本地编辑、可公开展示的 16:9 HTML PPT。"

@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>HTML Deck Studio V2.0 Source Template</title>
+  <style>
+    :root{
+      --stage:#e8e8e3;
+      --paper:#fbfbf8;
+      --paper-2:#f5f4ef;
+      --ink:#26251f;
+      --muted:#807d75;
+      --line:#d7d5ce;
+      --orange:#f46a3b;
+      --orange-soft:#fff0e9;
+      --aqua:#278e84;
+      --aqua-soft:#eaf4f1;
+      --blue:#5278c8;
+      --blue-soft:#edf2ff;
+      --deck-scale:1;
+      --sans:Inter,"SF Pro Display","PingFang SC","Microsoft YaHei",sans-serif;
+      --mono:"SFMono-Regular",Consolas,"Liberation Mono",monospace;
+    }
+    *{box-sizing:border-box}
+    html,body{width:100%;height:100%;margin:0;overflow:hidden}
+    body{background:var(--stage);color:var(--ink);font-family:var(--sans);-webkit-font-smoothing:antialiased}
+    button{font:inherit}
+    .deck{position:absolute;left:50%;top:50%;width:1600px;height:900px;transform:translate(-50%,-50%) scale(var(--deck-scale));transform-origin:center;background:var(--paper);box-shadow:0 0 44px rgba(31,30,25,.16);overflow:hidden;isolation:isolate}
+    .slide{position:absolute;inset:0;display:none;grid-template-rows:auto minmax(0,1fr) auto;gap:18px;padding:86px 64px 54px;background:var(--paper);overflow:hidden}
+    .slide.active{display:grid}
+    .slide::before{content:"";position:absolute;top:66px;left:64px;right:64px;height:1px;background:var(--line)}
+    .slide-label{position:absolute;z-index:20;top:26px;left:64px;max-width:900px;color:var(--muted);font-size:14px;line-height:1.4;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none}
+    .head{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(360px,.85fr);align-items:start;gap:34px;min-height:0}
+    .head>p{margin:0;padding-left:22px;border-left:1px solid var(--line);color:var(--muted);font-size:16px;line-height:1.55}
+    .eyebrow{color:var(--orange);font:750 14px/1.45 var(--mono);letter-spacing:.08em;text-transform:uppercase}
+    h1,h2,h3,p{margin:0}
+    h2{margin-top:8px;font-size:26px;line-height:1.35;letter-spacing:-.02em}
+    h3{font-size:20px;line-height:1.4}
+    p{font-size:16px;line-height:1.6}
+    .claim{padding-top:12px;border-top:1px solid var(--line);font-size:18px;line-height:1.5;font-weight:750}
+    .claim strong{color:var(--orange)}
+    .title-cover{display:none;grid-template-rows:minmax(0,1fr) auto;padding:0 110px 72px}
+    .title-cover.active{display:grid}
+    .title-cover::before{display:none}
+    .title-main{align-self:center;max-width:1180px;padding-left:38px;border-left:4px solid var(--orange)}
+    .title-main h1{margin-top:18px;font-size:38px;line-height:1.22;letter-spacing:-.035em;white-space:nowrap}
+    .title-main h1 span{color:var(--orange)}
+    .title-sub{margin-top:24px;max-width:1040px;color:var(--muted);font-size:18px;line-height:1.6;white-space:nowrap}
+    .title-meta{display:flex;align-items:center;justify-content:space-between;padding-top:18px;border-top:1px solid var(--line);color:var(--muted);font-size:14px;line-height:1.5}
+    .tension-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:22px;min-height:0}
+    .pain-chain,.evidence-panel{min-height:0;border:1px solid var(--line);border-radius:12px;padding:22px}
+    .pain-chain{background:var(--paper)}
+    .evidence-panel{background:var(--aqua-soft)}
+    .pain-list{display:grid;gap:10px;margin-top:18px}
+    .pain-item{display:grid;grid-template-columns:42px minmax(0,1fr);gap:12px;align-items:start;padding:13px 0;border-top:1px solid var(--line)}
+    .pain-item:first-child{border-top:0}
+    .pain-item em{width:32px;height:32px;display:grid;place-items:center;border-radius:50%;background:var(--orange-soft);color:var(--orange);font:750 14px/1 var(--mono);font-style:normal}
+    .pain-item b{display:block;font-size:18px;line-height:1.4}
+    .pain-item span{display:block;margin-top:3px;color:var(--muted);font-size:14px;line-height:1.5}
+    .evidence-panel strong{display:block;margin-top:26px;color:var(--orange);font-size:24px;line-height:1.35}
+    .evidence-panel p{margin-top:8px;color:var(--muted)}
+    .visual{min-height:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--paper-2)}
+    .visual svg{display:block;width:100%;height:100%}
+    .svg-card{fill:#fff;stroke:#c7c5bd;stroke-width:1.2}
+    .svg-card.orange{fill:#fff0e9;stroke:#f46a3b}
+    .svg-card.aqua{fill:#eaf4f1;stroke:#278e84}
+    .svg-label{font:700 14px var(--mono);letter-spacing:.05em;fill:#807d75}
+    .svg-title{font:750 20px var(--sans);fill:#26251f}
+    .svg-body{font:400 15px var(--sans);fill:#807d75}
+    .svg-flow{fill:none;stroke:#f46a3b;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;marker-end:url(#arrow-orange)}
+    .controls{position:absolute;z-index:40;top:16px;right:64px;display:flex;align-items:center;gap:8px}
+    .nav{position:relative;width:42px;height:42px;display:grid;place-items:center;padding:0;border:1px solid var(--line);border-radius:50%;background:rgba(251,251,248,.94);color:var(--ink);cursor:pointer}
+    .nav:hover{border-color:var(--orange);color:var(--orange)}
+    .nav svg{width:19px;height:19px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+    .nav::after{content:attr(data-tip);position:absolute;top:49px;right:0;padding:5px 8px;border-radius:6px;background:var(--ink);color:var(--paper);font-size:12px;line-height:1.2;white-space:nowrap;opacity:0;pointer-events:none;transform:translateY(-3px);transition:.15s ease}
+    .nav:hover::after{opacity:1;transform:none}
+    .timeline{position:absolute;z-index:30;left:64px;right:64px;bottom:24px;display:grid;grid-auto-flow:column;grid-auto-columns:1fr;gap:2px;height:12px}
+    .timeline button{position:relative;height:12px;padding:0;border:0;background:transparent;cursor:pointer}
+    .timeline button::before{content:"";position:absolute;left:0;right:0;top:5px;height:2px;background:var(--line)}
+    .timeline button.active::before{background:var(--orange)}
+    .timeline button::after{content:attr(data-tip);position:absolute;left:50%;bottom:20px;padding:7px 9px;border-radius:6px;background:var(--ink);color:var(--paper);font-size:12px;line-height:1.3;white-space:nowrap;opacity:0;pointer-events:none;transform:translate(-50%,4px);transition:.15s ease}
+    .timeline button:hover::after{opacity:1;transform:translate(-50%,0)}
+    .speaker-notes{position:absolute;z-index:80;left:64px;right:64px;bottom:52px;display:none;max-height:180px;padding:16px 18px;border:1px solid var(--line);border-radius:10px;background:rgba(251,251,248,.96);box-shadow:0 0 24px rgba(30,30,24,.1);overflow:auto}
+    .speaker-notes.show{display:block}
+    .speaker-notes b{display:block;margin-bottom:6px;color:var(--orange);font:750 12px/1.4 var(--mono);letter-spacing:.08em}
+    .speaker-notes p{font-size:14px;line-height:1.55}
+  </style>
+</head>
+<body>
+  <main class="deck" id="deck">
+    <div class="slide-label" id="slideLabel"></div>
+
+    <section class="slide title-cover" data-title="分享封面" data-note="用 10-15 秒交代身份、主题和唯一核心结论，不展开背景。">
+      <div class="title-main" data-editable="group" data-edit-locked="true" data-layer-id="p1-title-main" data-layer-name="封面主视觉组">
+        <div class="eyebrow" data-editable="text" data-layer-id="p1-kicker" data-layer-name="封面标签">TOPIC · ORGANIZATION · VERSION</div>
+        <h1 data-editable="text" data-layer-id="p1-title" data-layer-name="封面主标题">[分享主题第一行]<br><span>[分享主题第二行]</span></h1>
+        <p class="title-sub" data-editable="text" data-layer-id="p1-subtitle" data-layer-name="封面主线">[一句话主线：因为什么问题，把什么改造成什么，从而得到什么价值。]</p>
+      </div>
+      <footer class="title-meta" data-editable="group" data-edit-locked="true" data-layer-id="p1-meta" data-layer-name="封面底部信息">
+        <span data-editable="text" data-layer-id="p1-speaker" data-layer-name="分享人信息"><b>[分享人]</b>｜[角色]</span>
+        <span data-editable="text" data-layer-id="p1-keywords" data-layer-name="封面关键词">[关键词 A] × [关键词 B] × [关键词 C]</span>
+      </footer>
+    </section>
+
+    <section class="slide" data-title="[内容页名称]" data-note="[填写本页讲解重点、转场和预计用时。]">
+      <header class="head" data-editable="group" data-edit-locked="true" data-layer-id="p2-head" data-layer-name="页面标题区">
+        <div data-editable="group" data-edit-locked="true" data-layer-id="p2-title-group" data-layer-name="左侧标题组">
+          <div class="eyebrow" data-editable="text" data-layer-id="p2-kicker" data-layer-name="章节标签">01 / SECTION LABEL</div>
+          <h2 data-editable="text" data-layer-id="p2-title" data-layer-name="页面主标题">[填写本页唯一主标题]</h2>
+        </div>
+        <p data-editable="text" data-layer-id="p2-head-note" data-layer-name="右侧说明">[填写一句补充解释；它不能重复主标题。]</p>
+      </header>
+      <div class="tension-grid" data-editable="group" data-edit-locked="true" data-layer-id="p2-content-grid" data-layer-name="内容双栏组">
+        <section class="pain-chain" data-editable="card" data-layer-id="p2-left-card" data-layer-name="左侧问题卡片">
+          <h3 data-editable="text" data-layer-id="p2-left-card-title" data-layer-name="左卡标题">[模块标题 A]</h3>
+          <div class="pain-list">
+            <article class="pain-item" data-editable="card" data-layer-id="p2-pain-1" data-layer-name="问题要点 01"><em>01</em><div><b>[要点标题]</b><span>[用一至两行说明该要点。]</span></div></article>
+            <article class="pain-item" data-editable="card" data-layer-id="p2-pain-2" data-layer-name="问题要点 02"><em>02</em><div><b>[要点标题]</b><span>[用一至两行说明该要点。]</span></div></article>
+            <article class="pain-item" data-editable="card" data-layer-id="p2-pain-3" data-layer-name="问题要点 03"><em>03</em><div><b>[要点标题]</b><span>[用一至两行说明该要点。]</span></div></article>
+          </div>
+        </section>
+        <section class="evidence-panel" data-editable="card" data-layer-id="p2-right-card" data-layer-name="右侧证据卡片">
+          <div class="eyebrow" data-editable="text" data-layer-id="p2-right-kicker" data-layer-name="证据标签">KEY MESSAGE</div>
+          <strong data-editable="text" data-layer-id="p2-right-strong" data-layer-name="重点结论">[填写重点结论]</strong>
+          <p data-editable="text" data-layer-id="p2-right-body" data-layer-name="证据说明">[填写支撑结论的事实、解释或来源。]</p>
+        </section>
+      </div>
+      <div class="claim" data-editable="text" data-layer-id="p2-claim" data-layer-name="底部结论">[填写本页收束句，使用<strong>一个重点短语。</strong>]</div>
+    </section>
+
+    <section class="slide" data-title="[图示页名称]" data-note="[按图的阅读顺序填写讲解备注。]">
+      <header class="head" data-editable="group" data-edit-locked="true" data-layer-id="p3-head" data-layer-name="图示页标题区">
+        <div data-editable="group" data-edit-locked="true" data-layer-id="p3-title-group" data-layer-name="图示页标题组">
+          <div class="eyebrow" data-editable="text" data-layer-id="p3-kicker" data-layer-name="图示页标签">02 / DIAGRAM</div>
+          <h2 data-editable="text" data-layer-id="p3-title" data-layer-name="图示页主标题">[填写图示页唯一主标题]</h2>
+        </div>
+        <p data-editable="text" data-layer-id="p3-head-note" data-layer-name="图示说明">[填写图的阅读方式、范围或关键说明。]</p>
+      </header>
+      <div class="visual" data-editable="svg" data-layer-id="p3-flow-svg" data-layer-name="流程图 SVG">
+        <svg viewBox="0 0 1460 560" role="img" aria-labelledby="system-title">
+          <title id="system-title">通用节点与反馈路径 SVG 占位示例</title>
+          <defs><marker id="arrow-orange" viewBox="0 0 12 12" markerWidth="11" markerHeight="11" refX="10" refY="6" orient="auto" markerUnits="userSpaceOnUse"><path d="M2 2L10 6L2 10" fill="none" stroke="#f46a3b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>
+          <rect x="54" y="170" width="250" height="170" rx="14" class="svg-card orange"/><text x="82" y="212" class="svg-label">01 / NODE A</text><text x="82" y="256" class="svg-title">[节点 A]</text><text x="82" y="292" class="svg-body">[第一行说明]</text><text x="82" y="322" class="svg-body">[第二行说明]</text>
+          <rect x="420" y="118" width="320" height="274" rx="14" class="svg-card aqua"/><text x="450" y="160" class="svg-label">02 / NODE B</text><text x="450" y="204" class="svg-title">[节点 B]</text><text x="450" y="246" class="svg-body">[第一行说明]</text><text x="450" y="278" class="svg-body">[第二行说明]</text><text x="450" y="310" class="svg-body">[第三行说明]</text><text x="450" y="342" class="svg-body">[第四行说明]</text>
+          <rect x="860" y="74" width="254" height="154" rx="14" class="svg-card"/><text x="890" y="116" class="svg-label">03 / BRANCH</text><text x="890" y="160" class="svg-title">[判断节点]</text><text x="890" y="196" class="svg-body">[条件与分支说明]</text>
+          <rect x="860" y="304" width="254" height="154" rx="14" class="svg-card"/><text x="890" y="346" class="svg-label">04 / NODE C</text><text x="890" y="390" class="svg-title">[节点 C]</text><text x="890" y="426" class="svg-body">[节点说明]</text>
+          <rect x="1246" y="170" width="170" height="170" rx="14" class="svg-card aqua"/><text x="1274" y="212" class="svg-label">05 / RESULT</text><text x="1274" y="256" class="svg-title">[结果节点]</text><text x="1274" y="292" class="svg-body">[结果说明]</text><text x="1274" y="322" class="svg-body">[后续动作]</text>
+          <path d="M304 255H410" class="svg-flow"/><path d="M740 200H850" class="svg-flow"/><path d="M987 228V294" class="svg-flow"/><path d="M1114 381H1190Q1220 381 1220 351V265Q1220 255 1236 255" class="svg-flow"/><path d="M1330 350V500Q1330 522 1308 522H600Q580 522 580 500V402" class="svg-flow"/>
+        </svg>
+      </div>
+      <div class="claim" data-editable="text" data-layer-id="p3-claim" data-layer-name="图示结论">[填写图示结论，突出<strong>最重要的关系。</strong>]</div>
+    </section>
+
+    <section class="slide title-cover" data-title="致谢" data-note="复述唯一结论，不新增观点。">
+      <div class="title-main" data-editable="group" data-edit-locked="true" data-layer-id="p4-title-main" data-layer-name="致谢主视觉组">
+        <div class="eyebrow" data-editable="text" data-layer-id="p4-kicker" data-layer-name="致谢标签">THANK YOU</div>
+        <h1 data-editable="text" data-layer-id="p4-title" data-layer-name="致谢标题">谢谢。<span>[复述核心结论]</span></h1>
+        <p class="title-sub" data-editable="text" data-layer-id="p4-subtitle" data-layer-name="致谢收束">[一句面向未来的收束：让本次改变成为下一次交付的默认能力。]</p>
+      </div>
+      <footer class="title-meta" data-editable="group" data-edit-locked="true" data-layer-id="p4-meta" data-layer-name="致谢底部信息">
+        <span data-editable="text" data-layer-id="p4-speaker" data-layer-name="致谢署名"><b>[分享人]</b>｜[主题]</span>
+        <span data-editable="text" data-layer-id="p4-qa" data-layer-name="问答提示">Q &amp; A</span>
+      </footer>
+    </section>
+
+    <nav class="timeline" id="timeline" aria-label="幻灯片目录与进度"></nav>
+    <div class="controls" aria-label="幻灯片控制">
+      <button class="nav" id="prev" type="button" aria-label="上一页" data-tip="上一页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6M5 12h15"></path></svg></button>
+      <button class="nav" id="next" type="button" aria-label="下一页" data-tip="下一页"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m14 6 6 6-6 6M19 12H4"></path></svg></button>
+      <button class="nav" id="fullscreen" type="button" aria-label="全屏播放" data-tip="全屏"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 4H4v4M16 4h4v4M20 16v4h-4M4 16v4h4"></path></svg></button>
+    </div>
+    <aside class="speaker-notes" id="speakerNotes"><b>SPEAKER NOTE · N</b><p id="noteText"></p></aside>
+  </main>
+
+  <script>
+    (function(){
+      var deck=document.getElementById("deck");
+      var slides=[].slice.call(document.querySelectorAll(".slide"));
+      var label=document.getElementById("slideLabel");
+      var timeline=document.getElementById("timeline");
+      var notePanel=document.getElementById("speakerNotes");
+      var noteText=document.getElementById("noteText");
+      var active=0;
+      var currentScale=1;
+      function fitDeck(){
+        var gapX=32,gapY=32;
+        currentScale=Math.max(.1,Math.min((window.innerWidth-gapX)/1600,(window.innerHeight-gapY)/900));
+        document.documentElement.style.setProperty("--deck-scale",String(currentScale));
+      }
+      function clamp(index){return Math.max(0,Math.min(slides.length-1,index))}
+      function showSlide(index,writeHash){
+        active=clamp(index);
+        slides.forEach(function(slide,i){slide.classList.toggle("active",i===active)});
+        timeline.querySelectorAll("button").forEach(function(button,i){button.classList.toggle("active",i===active)});
+        label.textContent=slides[active].dataset.title||"";
+        noteText.textContent=slides[active].dataset.note||"";
+        if(writeHash!==false){history.replaceState(null,"","#"+(active+1))}
+        window.dispatchEvent(new CustomEvent("deck-slide-change",{detail:{index:active}}));
+      }
+      function buildTimeline(){
+        timeline.replaceChildren();
+        slides.forEach(function(slide,index){
+          var button=document.createElement("button");
+          button.type="button";
+          button.dataset.tip=(index+1)+" / "+(slide.dataset.title||"未命名");
+          button.setAttribute("aria-label","跳转至第 "+(index+1)+" 页："+(slide.dataset.title||"未命名"));
+          button.addEventListener("click",function(){showSlide(index,true)});
+          timeline.appendChild(button);
+        });
+      }
+      function toggleFullscreen(){if(document.fullscreenElement){document.exitFullscreen()}else{document.documentElement.requestFullscreen()}}
+      document.getElementById("prev").addEventListener("click",function(){showSlide(active-1,true)});
+      document.getElementById("next").addEventListener("click",function(){showSlide(active+1,true)});
+      document.getElementById("fullscreen").addEventListener("click",toggleFullscreen);
+      document.addEventListener("keydown",function(event){
+        if(event.target&&event.target.isContentEditable){return}
+        if(event.key==="n"||event.key==="N"){event.preventDefault();notePanel.classList.toggle("show");return}
+        if(event.key==="ArrowLeft"||event.key==="ArrowUp"){event.preventDefault();showSlide(active-1,true)}
+        else if(event.key==="ArrowRight"||event.key==="ArrowDown"||event.key===" "){event.preventDefault();showSlide(active+1,true)}
+        else if(event.key==="Home"){event.preventDefault();showSlide(0,true)}
+        else if(event.key==="End"){event.preventDefault();showSlide(slides.length-1,true)}
+      });
+      window.addEventListener("hashchange",function(){var requested=Number(location.hash.slice(1));if(Number.isFinite(requested)){showSlide(requested-1,false)}});
+      window.addEventListener("resize",fitDeck);
+      window.addEventListener("orientationchange",fitDeck);
+      document.addEventListener("fullscreenchange",fitDeck);
+      window.HTMLDeckStudioViewer={showSlide:showSlide,getActiveIndex:function(){return active},getScale:function(){return currentScale},refresh:function(){buildTimeline();fitDeck();showSlide(active,false)}};
+      buildTimeline();
+      fitDeck();
+      var initial=Number(location.hash.slice(1));
+      showSlide(Number.isFinite(initial)&&initial>0?initial-1:0,false);
+    })();
+  </script>
+</body>
+</html>

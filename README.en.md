@@ -8,6 +8,19 @@ HTML Deck Studio is a Codex Skill and lightweight HTML presentation-production k
 
 **Principle:** Treat “making slides” as a complete production line: verify the facts, build the narrative, design the page system, implement a self-contained HTML deck, then close the loop with local editing, static QA, and viewer-only export.
 
+## Product Evolution
+
+This repository keeps both generations instead of replacing V1 with V2.
+
+| Version | Product Name | Core Positioning | Path |
+|---|---|---|---|
+| V1 | HTML Deck Studio | Lightweight dual-state HTML deck editor | repository root |
+| V2 | DeckForge Studio | Three-mode deck production studio with Viewer / Quick Edit / Studio | [`v2/`](./v2/) |
+
+V1 proves the lightweight HTML deck workflow: directly opened HTML is viewer-like, while the local preview service enables editing and saving.
+
+V2, now named **DeckForge Studio / DeckForge 演示工作室**, keeps the V1 generation methodology and adds source/viewer delivery boundaries, Quick Edit, a local Studio workbench, parser-level viewer export, and regression tests.
+
 ## What You Get
 
 HTML Deck Studio gives you a compact but end-to-end deck workflow:
@@ -144,13 +157,15 @@ The template intentionally contains placeholders for future decks, so placeholde
 │   ├── presentation-archetypes.md
 │   ├── qa-checklist.md
 │   └── story-and-content.md
-└── scripts/
-    ├── check.sh
-    ├── check_presentation.py
-    ├── export_viewer.py
-    ├── preview.sh
-    ├── serve_editable_ppt.py
-    └── test_dual_state.py
+├── scripts/
+│   ├── check.sh
+│   ├── check_presentation.py
+│   ├── export_viewer.py
+│   ├── preview.sh
+│   ├── serve_editable_ppt.py
+│   └── test_dual_state.py
+└── v2/
+    └── DeckForge Studio
 ```
 
 ## Installation And Use

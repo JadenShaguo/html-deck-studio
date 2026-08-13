@@ -252,7 +252,7 @@ DeckForge 演示工作室的核心规则写在 `references/` 中，方便 Codex 
 
 ```bash
 git clone https://github.com/JadenShaguo/html-deck-studio.git
-cd html-deck-studio/v2
+cd "html-deck-studio/V2版-DeckForge Studio（DeckForge 演示工作室）"
 cp assets/source-template.html deck.source.html
 ./scripts/preview.sh deck.source.html
 ```

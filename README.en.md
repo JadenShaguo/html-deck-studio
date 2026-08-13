@@ -15,7 +15,7 @@ This repository keeps both generations instead of replacing V1 with V2.
 | Version | Product Name | Core Positioning | Path |
 |---|---|---|---|
 | V1 | HTML Deck Studio | Lightweight dual-state HTML deck editor | repository root |
-| V2 | DeckForge Studio | Three-mode deck production studio with Viewer / Quick Edit / Studio | [`v2/`](./v2/) |
+| V2 | DeckForge Studio | Three-mode deck production studio with Viewer / Quick Edit / Studio | [`V2版-DeckForge Studio（DeckForge 演示工作室）/`](./V2%E7%89%88-DeckForge%20Studio%EF%BC%88DeckForge%20%E6%BC%94%E7%A4%BA%E5%B7%A5%E4%BD%9C%E5%AE%A4%EF%BC%89/) |
 
 V1 proves the lightweight HTML deck workflow: directly opened HTML is viewer-like, while the local preview service enables editing and saving.
 
@@ -164,8 +164,7 @@ The template intentionally contains placeholders for future decks, so placeholde
 │   ├── preview.sh
 │   ├── serve_editable_ppt.py
 │   └── test_dual_state.py
-└── v2/
-    └── DeckForge Studio
+└── V2版-DeckForge Studio（DeckForge 演示工作室）/
 ```
 
 ## Installation And Use

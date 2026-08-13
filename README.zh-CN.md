@@ -15,7 +15,7 @@ HTML Deck Studio 是一套面向 Codex 的 HTML 演示稿生产工具包。它�
 | 版本 | 产品名 | 核心定位 | 路径 |
 |---|---|---|---|
 | V1 | HTML Deck Studio | 轻量双态 HTML Deck 编辑器 | 仓库根目录 |
-| V2 | DeckForge Studio / DeckForge 演示工作室 | Viewer / Quick Edit / Studio 三态演示稿生产工作室 | [`v2/`](./v2/) |
+| V2 | DeckForge Studio / DeckForge 演示工作室 | Viewer / Quick Edit / Studio 三态演示稿生产工作室 | [`V2版-DeckForge Studio（DeckForge 演示工作室）/`](./V2%E7%89%88-DeckForge%20Studio%EF%BC%88DeckForge%20%E6%BC%94%E7%A4%BA%E5%B7%A5%E4%BD%9C%E5%AE%A4%EF%BC%89/) |
 
 V1 证明了轻量 HTML 演示稿工作流：直接打开 HTML 是展示态，本地 preview 服务运行时才启用编辑和保存。
 
@@ -164,8 +164,7 @@ HTML Deck Studio 的核心规则都写在 `references/` 中，方便 Codex 在�
 │   ├── preview.sh
 │   ├── serve_editable_ppt.py
 │   └── test_dual_state.py
-└── v2/
-    └── DeckForge Studio / DeckForge 演示工作室
+└── V2版-DeckForge Studio（DeckForge 演示工作室）/
 ```
 
 ## 安装与使用

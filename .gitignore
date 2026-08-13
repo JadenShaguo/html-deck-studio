@@ -2,4 +2,10 @@ __pycache__/
 *.py[cod]
 .DS_Store
 deck.html
+deck*.html
+*.viewer.html
 *.tmp
+*.log
+.pytest_cache/
+.mypy_cache/
+htmlcov/

@@ -1,23 +1,129 @@
+**English** | [中文](README.zh-CN.md)
+
 # HTML Deck Studio
 
-HTML Deck Studio is a Codex Skill for turning topics, notes, screenshots, documents, and code repositories into editable, verifiable, self-contained 16:9 HTML presentations.
+HTML Deck Studio is a Codex Skill and lightweight HTML presentation-production kit. It turns topics, notes, screenshots, documents, and code repositories into structured, readable, editable, savable, verifiable, and publishable 16:9 single-file HTML decks.
 
-## Highlights
+**Slogan:** Story first. Ship as HTML.
 
-- Self-contained HTML output: no CDN, remote fonts, external images, or build step.
-- Editable in the browser: text editing, draggable layout units, resize handles, keyboard navigation, speaker notes, and fullscreen mode.
-- Local save workflow: run a tiny Python server and save edits back to the source HTML atomically.
-- Static QA checks: verify structure, required controls, external assets, SVG `viewBox`, placeholders, and presentation metadata.
-- Presentation-first workflow: narrative, visual system, implementation, and verification are documented separately.
+**Principle:** Treat “making slides” as a complete production line: verify the facts, build the narrative, design the page system, implement a self-contained HTML deck, then close the loop with local editing, static QA, and viewer-only export.
 
-## What This Is
+## What You Get
 
-This repository is not a PowerPoint plugin, a SaaS product, or a Node.js application. It is a portable presentation-production kit for Codex:
+HTML Deck Studio gives you a compact but end-to-end deck workflow:
 
-- a `SKILL.md` workflow,
-- a self-contained editable HTML template,
-- reference guides for story, design, engineering, and QA,
-- zero-dependency Python scripts for checking and local editing.
+- A Codex Skill workflow from research and story design to implementation and delivery
+- A self-contained HTML template with CSS, JS, SVG, and runtime logic in one file
+- A fixed 16:9 canvas: `1600 x 900` by default, scaled responsively in the browser
+- Presentation controls: timeline, previous/next, keyboard navigation, fullscreen, hash routing, and speaker notes
+- Lightweight dual-state editing: directly opened HTML is viewer-only; the local preview server enables the edit entry
+- Layer-level editing: layer tree, parent/child selection, drag, resize, lock/unlock, and reset
+- Local save: browser edits are atomically written back to the source HTML through a tiny Python service
+- Public publishing: export a viewer-only HTML file with no editor capability
+- Static QA: checks for structure, controls, assets, SVG `viewBox`, placeholders, and dual-state behavior
+
+## Quick Start
+
+Create a new deck from the template:
+
+```bash
+cp assets/html-ppt-template.html deck.html
+```
+
+Run static checks:
+
+```bash
+./scripts/check.sh deck.html
+```
+
+Start the local preview and save service:
+
+```bash
+./scripts/preview.sh deck.html
+```
+
+Open in your browser:
+
+```text
+http://127.0.0.1:4173/deck.html
+```
+
+The **Modify** button appears only when the deck is opened through the local service. If you open the same HTML file directly, it behaves like a normal viewer and does not expose the edit entry.
+
+Use another port if needed:
+
+```bash
+./scripts/preview.sh deck.html 4180
+```
+
+Export a public viewer-only deck:
+
+```bash
+./scripts/export_viewer.py deck.html deck.viewer.html
+```
+
+Run the dual-state editing end-to-end test:
+
+```bash
+./scripts/test_dual_state.py
+```
+
+## Common Workflows
+
+### Create A New Deck
+
+1. Copy `assets/html-ppt-template.html` to your target HTML file.
+2. Use `references/story-and-content.md` to define the slide-by-slide narrative.
+3. Use `references/design-system.md` to design hierarchy, type scale, color, layout, diagrams, and screenshots.
+4. Implement the pages in HTML and keep stable `data-layer-id` values for important elements.
+5. Run `./scripts/check.sh deck.html` before delivery.
+
+### Edit An Existing HTML Deck Locally
+
+1. Run `./scripts/preview.sh deck.html`.
+2. Click **Modify** in the upper-right corner.
+3. Select a layer from the right-side layer tree or click an element on the slide.
+4. Drag the selection box to move the element, or use resize handles to adjust its size.
+5. Use the Inspector to edit X / Y / W / H, lock, unlock, or reset a layer.
+6. Click “Save to source” to write the current browser state back to the HTML file.
+
+### Share Or Deploy
+
+There are two paths:
+
+- Lightweight sharing: share `deck.html` directly. Without the local service flag, it will not show the edit entry.
+- Cleaner public release: run `./scripts/export_viewer.py deck.html deck.viewer.html` to generate a viewer-only file without editor UI, save endpoints, or layer metadata.
+
+For public publishing, the second path is recommended.
+
+## Customizing Story And Design Rules
+
+HTML Deck Studio keeps its production rules in `references/`, so Codex can read them before generating a deck:
+
+- `references/story-and-content.md` — thesis, slide tasks, transitions, and speaker notes
+- `references/design-system.md` — fixed canvas, safe areas, typography, color, cards, diagrams, and screenshots
+- `references/html-engineering.md` — self-contained HTML, scaling, navigation, editing, saving, and export rules
+- `references/qa-checklist.md` — static checks, browser checks, interaction checks, and delivery QA
+- `references/presentation-archetypes.md` — common structures for product, technical, case-study, and report-style decks
+
+If you want to change the default style, update these reference documents first instead of patching one slide at a time.
+
+## Default Template Capabilities
+
+`assets/html-ppt-template.html` includes:
+
+- Cover, content, diagram, and closing slides
+- A fixed `1600 x 900` design canvas
+- Slide title label and bottom timeline
+- Mouse and keyboard navigation
+- Fullscreen mode
+- Speaker notes panel
+- Lightweight dual-state edit entry
+- Layer tree and Inspector panel
+- Local save-service status detection
+- Viewer-only export-compatible structure
+
+The template intentionally contains placeholders for future decks, so placeholder warnings from the static checker are expected when checking the template itself.
 
 ## Repository Structure
 
@@ -41,67 +147,72 @@ This repository is not a PowerPoint plugin, a SaaS product, or a Node.js applica
 └── scripts/
     ├── check.sh
     ├── check_presentation.py
+    ├── export_viewer.py
     ├── preview.sh
-    └── serve_editable_ppt.py
+    ├── serve_editable_ppt.py
+    └── test_dual_state.py
 ```
 
-## Requirements
+## Installation And Use
 
-Only Python 3 is required. The scripts use the Python standard library only.
-
-```bash
-python3 --version
-```
-
-## Quick Start
-
-Create a new deck from the template:
+### Use As A Normal Project
 
 ```bash
+git clone https://github.com/JadenShaguo/html-deck-studio.git
+cd html-deck-studio
 cp assets/html-ppt-template.html deck.html
-```
-
-Run static checks:
-
-```bash
-./scripts/check.sh deck.html
-```
-
-Start local preview and editable save service:
-
-```bash
 ./scripts/preview.sh deck.html
 ```
 
-Open:
+### Use As A Codex Skill
 
-```text
-http://127.0.0.1:4173/deck.html
-```
+Place this project in a skill directory that Codex can read, then invoke `html-deck-studio` in your task. When generating a deck, Codex should read `SKILL.md` and the relevant files under `references/` before editing the HTML template.
 
-Use another port if needed:
+## Requirements
+
+- Python 3
+- A modern browser
+- Codex or another AI coding agent that can read Skill-style instructions
+
+No Node.js, Vite, React, database, CDN, or remote runtime is required. The scripts use only the Python standard library.
+
+## How It Works
+
+1. Codex reads `SKILL.md` and `references/` to build a fact base and slide-by-slide narrative.
+2. New decks start by copying `assets/html-ppt-template.html`, rather than rebuilding the runtime from scratch.
+3. The HTML deck uses a fixed 16:9 canvas and scales to the browser viewport.
+4. When opened directly, the deck stays in viewer mode and does not expose the edit entry.
+5. `preview.sh` starts a local Python service that injects `window.__HTML_DECK_STUDIO_LOCAL__=true` at request time.
+6. The page detects the local runtime flag and then shows the **Modify** button, layer tree, Inspector, and save workflow.
+7. “Save to source” sends the current HTML to the local service, which atomically replaces the source file via a temporary file and `os.replace`.
+8. `export_viewer.py` generates a public viewer-only HTML file with no editor capability.
+9. `test_dual_state.py` verifies local runtime injection, save cleanup, and viewer-only export.
+
+## Public Boundary
+
+- Directly opened or statically hosted `deck.html` does not show the edit entry.
+- Local editing is enabled only while `preview.sh` is running.
+- The save endpoint accepts only allowed local origins.
+- `export_viewer.py` removes editor UI, save/download buttons, layer metadata, local runtime markers, and edit-cache logic.
+- This project does not try to prevent copying via browser developer tools; it defines a product boundary where shared pages do not provide editing or save capabilities.
+
+## Quality Checks
+
+Common checks:
 
 ```bash
-./scripts/preview.sh deck.html 4180
+./scripts/check.sh assets/html-ppt-template.html
+./scripts/test_dual_state.py
+python3 -m py_compile scripts/*.py
 ```
 
-## Workflow
+After exporting a viewer:
 
-1. Define the topic, audience, occasion, duration, and one-sentence thesis.
-2. Build the story with `references/story-and-content.md`.
-3. Design on a fixed `1600 x 900` canvas with `references/design-system.md`.
-4. Start from `assets/html-ppt-template.html`; keep navigation, notes, editing, and save behavior.
-5. Run `scripts/check_presentation.py` or `./scripts/check.sh`.
-6. When browser automation is available, verify layout and interactions with screenshots.
+```bash
+./scripts/export_viewer.py deck.html deck.viewer.html
+./scripts/check.sh deck.viewer.html
+```
 
-## Output Standard
+## License
 
-- The final deck is a single self-contained HTML file.
-- Every slide has `data-title` and `data-note`.
-- Navigation, timeline, fullscreen, speaker notes, and edit mode remain available.
-- The local save service can write browser edits back to the source HTML.
-- Static checks pass before delivery.
-
-## Optional Integrations
-
-HTML Deck Studio does not require any private runtime service, company-specific platform, or private API. Optional integrations such as document connectors or static-site deployment tools can be used when your local Codex environment provides them.
+Refer to the actual LICENSE file in the repository. If you plan to publish this project publicly, add an explicit open-source license.

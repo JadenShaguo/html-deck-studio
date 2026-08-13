@@ -12,18 +12,31 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-REQUIRED_IDS = {
+BASE_REQUIRED_IDS = {
     "deck",
     "timeline",
-    "editToggle",
     "prev",
     "next",
     "fullscreen",
+    "speakerNotes",
+}
+EDITOR_REQUIRED_IDS = {
+    "editToggle",
     "editToolbar",
     "resetSlide",
     "saveCurrentHtml",
     "editSelection",
 }
+RECOMMENDED_V2_IDS = {
+    "layerPanel",
+    "layerTree",
+    "layerCount",
+    "inspectorPanel",
+    "inspectorLayerName",
+    "downloadCurrentHtml",
+    "saveStatus",
+}
+VALID_EDITABLE_TYPES = {"text", "image", "video", "button", "card", "group", "svg"}
 
 PLACEHOLDER_PATTERN = re.compile(r"\[[^\]\n]{0,80}[\u4e00-\u9fff][^\]\n]{0,80}\]")
 TODO_PATTERN = re.compile(r"\b(TODO|TBD|FIXME)\b|待补|待定|占位", re.IGNORECASE)
@@ -34,6 +47,7 @@ def parse_args() -> argparse.Namespace:
         description="Check the structure and portability of an HTML PPT."
     )
     parser.add_argument("html", type=Path)
+    parser.add_argument("--mode", choices=("auto", "source", "viewer"), default="auto")
     parser.add_argument("--json", action="store_true")
     return parser.parse_args()
 
@@ -66,6 +80,8 @@ class PresentationParser(HTMLParser):
         self.svg_without_viewbox = 0
         self.external_assets: list[dict[str, str]] = []
         self.direct_raster_images: list[str] = []
+        self.editable_layers: list[dict[str, str]] = []
+        self.edit_units_without_layer = 0
 
     def handle_starttag(
         self, tag: str, attrs: list[tuple[str, str | None]]
@@ -73,10 +89,16 @@ class PresentationParser(HTMLParser):
         values = attr_map(attrs)
         if values.get("id"):
             self.ids.append(values["id"])
+        classes = class_tokens(values.get("class", ""))
 
-        if tag == "section" and "slide" in class_tokens(values.get("class", "")):
+        if values.get("data-editable"):
+            self.editable_layers.append(values)
+        if "edit-unit" in classes and not values.get("data-layer-id"):
+            self.edit_units_without_layer += 1
+
+        if tag == "section" and "slide" in classes:
             self.slides.append(values)
-            if "title-cover" in class_tokens(values.get("class", "")):
+            if "title-cover" in classes:
                 self.title_cover_slides += 1
 
         if tag == "svg":
@@ -105,10 +127,19 @@ class PresentationParser(HTMLParser):
                 self.direct_raster_images.append(source[:32])
 
 
-def run_checks(path: Path) -> dict:
+def detect_mode(path: Path, text: str, requested: str) -> str:
+    if requested != "auto":
+        return requested
+    if "editToggle" in text or "data-editable" in text or "__HTML_DECK_STUDIO_LOCAL__" in text:
+        return "source"
+    return "viewer"
+
+
+def run_checks(path: Path, requested_mode: str = "auto") -> dict:
     text = path.read_text(encoding="utf-8")
     parser = PresentationParser()
     parser.feed(text)
+    mode = detect_mode(path, text, requested_mode)
 
     errors: list[str] = []
     warnings: list[str] = []
@@ -141,9 +172,49 @@ def run_checks(path: Path) -> dict:
     if duplicates:
         errors.append("存在重复 ID：" + ", ".join(duplicates))
 
-    missing_ids = sorted(REQUIRED_IDS - set(parser.ids))
+    required_ids = set(BASE_REQUIRED_IDS)
+    if mode == "source":
+        required_ids |= EDITOR_REQUIRED_IDS
+    missing_ids = sorted(required_ids - set(parser.ids))
     if missing_ids:
         errors.append("缺少必要控件 ID：" + ", ".join(missing_ids))
+
+    if mode == "source":
+        missing_v2_ids = sorted(RECOMMENDED_V2_IDS - set(parser.ids))
+        if missing_v2_ids:
+            warnings.append("缺少编辑系统 v2 推荐控件 ID：" + ", ".join(missing_v2_ids))
+
+    if mode == "source" and not parser.editable_layers:
+        warnings.append("没有发现 data-editable 图层；编辑系统将退回粗粒度旧模式。")
+    else:
+        layer_ids = [
+            layer.get("data-layer-id", "").strip()
+            for layer in parser.editable_layers
+            if layer.get("data-layer-id", "").strip()
+        ]
+        missing_layer_ids = sum(
+            1 for layer in parser.editable_layers if not layer.get("data-layer-id", "").strip()
+        )
+        duplicate_layer_ids = sorted(
+            key for key, count in Counter(layer_ids).items() if count > 1
+        )
+        invalid_types = sorted(
+            set(
+                layer.get("data-editable", "")
+                for layer in parser.editable_layers
+                if layer.get("data-editable", "") not in VALID_EDITABLE_TYPES
+            )
+        )
+        if missing_layer_ids:
+            warnings.append(f"有 {missing_layer_ids} 个 data-editable 图层缺少 data-layer-id。")
+        if duplicate_layer_ids:
+            errors.append("存在重复 data-layer-id：" + ", ".join(duplicate_layer_ids))
+        if invalid_types:
+            errors.append("存在非法 data-editable 类型：" + ", ".join(invalid_types))
+    if mode == "source" and parser.edit_units_without_layer:
+        warnings.append(
+            f"有 {parser.edit_units_without_layer} 个 edit-unit 缺少 data-layer-id，建议升级为显式图层。"
+        )
 
     compact_css = re.sub(r"\s+", "", text.lower())
     if "width:1600px" not in compact_css or "height:900px" not in compact_css:
@@ -152,17 +223,46 @@ def run_checks(path: Path) -> dict:
         errors.append("未找到整页等比缩放逻辑。")
 
     required_code = {
-        "本地编辑缓存": "localStorage",
-        "保存端点": "/__ppt_editor_save__",
-        "可编辑文本": "contenteditable",
         "全屏逻辑": "requestFullscreen",
         "哈希导航": "location.hash",
         "演讲者备注": "speakerNotes",
-        "编辑模式状态": "edit-mode",
     }
+    if mode == "source":
+        required_code.update(
+            {
+                "本地编辑门禁": "__HTML_DECK_STUDIO_LOCAL__",
+                "本地编辑缓存": "localStorage",
+                "保存端点": "/__ppt_editor_save__",
+                "可编辑文本": "contenteditable",
+                "编辑模式状态": "edit-mode",
+            }
+        )
     for label, token in required_code.items():
         if token not in text:
             errors.append(f"缺少{label}：{token}")
+
+    if mode == "viewer":
+        forbidden = sorted(
+            token
+            for token in (
+                "data-editable",
+                "data-layer-id",
+                "editToggle",
+                "editToolbar",
+                "saveCurrentHtml",
+                "downloadCurrentHtml",
+                "layerPanel",
+                "inspectorPanel",
+                "__HTML_DECK_STUDIO_LOCAL__",
+                "htmlDeckStudioLocalFlag",
+                "contenteditable",
+                "localStorage",
+                "__ppt_editor",
+            )
+            if token in text
+        )
+        if forbidden:
+            errors.append("viewer 文件包含编辑器能力或图层元数据：" + ", ".join(forbidden))
 
     if parser.svg_without_viewbox:
         errors.append(f"有 {parser.svg_without_viewbox} 个 SVG 缺少 viewBox。")
@@ -187,6 +287,7 @@ def run_checks(path: Path) -> dict:
 
     return {
         "ok": not errors,
+        "mode": mode,
         "file": str(path),
         "slides": len(parser.slides),
         "title_cover_slides": parser.title_cover_slides,
@@ -202,14 +303,14 @@ def main() -> None:
     if not path.is_file():
         raise SystemExit(f"HTML file does not exist: {path}")
 
-    result = run_checks(path)
+    result = run_checks(path, args.mode)
     if args.json:
         print(json.dumps(result, ensure_ascii=False, indent=2))
     else:
         status = "PASS" if result["ok"] else "FAIL"
         print(
             f"[{status}] {result['file']} | "
-            f"slides={result['slides']} svg={result['svg']}"
+            f"mode={result['mode']} slides={result['slides']} svg={result['svg']}"
         )
         for message in result["errors"]:
             print(f"ERROR: {message}")

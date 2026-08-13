@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import errno
 import json
 import os
 import tempfile
@@ -13,6 +14,12 @@ from urllib.parse import unquote, urlparse
 
 
 SAVE_PATH = "/__ppt_editor_save__"
+STATUS_PATH = "/__ppt_editor_status__"
+LOCAL_FLAG = (
+    '<script id="htmlDeckStudioLocalFlag">'
+    "window.__HTML_DECK_STUDIO_LOCAL__=true;"
+    "</script>"
+)
 
 
 def parse_args() -> argparse.Namespace:
@@ -50,14 +57,53 @@ def build_handler(target: Path, host: str, port: int, max_body_bytes: int):
             self.end_headers()
             self.wfile.write(body)
 
+        def _send_html(self, html: str) -> None:
+            body = html.encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/html; charset=utf-8")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def _target_html_with_local_flag(self) -> str:
+            html = target.read_text(encoding="utf-8")
+            if '<script id="htmlDeckStudioLocalFlag">' in html:
+                return html
+            marker = LOCAL_FLAG + "\n"
+            if "</head>" in html:
+                return html.replace("</head>", marker + "</head>", 1)
+            return html.replace("<body", marker + "<body", 1)
+
         def do_GET(self):
             path = unquote(urlparse(self.path).path)
+            if path == STATUS_PATH:
+                self._send_json(
+                    200,
+                    {
+                        "ok": True,
+                        "file": str(target),
+                        "maxBytes": max_body_bytes,
+                    },
+                )
+                return
             if path == "/":
                 self.send_response(302)
                 self.send_header("Location", f"/{target.name}")
                 self.end_headers()
                 return
+            if path == f"/{target.name}":
+                self._send_html(self._target_html_with_local_flag())
+                return
             super().do_GET()
+
+        def do_OPTIONS(self):
+            if urlparse(self.path).path not in {SAVE_PATH, STATUS_PATH}:
+                self._send_json(404, {"ok": False, "error": "unknown endpoint"})
+                return
+            self.send_response(204)
+            self.send_header("Allow", "GET, POST, OPTIONS")
+            self.send_header("Content-Length", "0")
+            self.end_headers()
 
         def do_POST(self):
             if urlparse(self.path).path != SAVE_PATH:
@@ -81,6 +127,8 @@ def build_handler(target: Path, host: str, port: int, max_body_bytes: int):
             try:
                 payload = json.loads(self.rfile.read(length).decode("utf-8"))
                 html = payload.get("html", "")
+                if isinstance(html, str):
+                    html = html.replace(LOCAL_FLAG + "\n", "").replace(LOCAL_FLAG, "")
                 lowered = html.lower() if isinstance(html, str) else ""
                 if (
                     not isinstance(html, str)
@@ -139,7 +187,15 @@ def main() -> None:
         port=args.port,
         max_body_bytes=args.max_mb * 1024 * 1024,
     )
-    server = ThreadingHTTPServer((args.host, args.port), handler)
+    try:
+        server = ThreadingHTTPServer((args.host, args.port), handler)
+    except OSError as error:
+        if error.errno in {errno.EADDRINUSE, 48, 98}:
+            raise SystemExit(
+                f"Port {args.port} is already in use. "
+                f"Try another port, for example: ./scripts/preview.sh \"{target}\" {args.port + 1}"
+            ) from None
+        raise
     print(f"Serving {target} at http://{args.host}:{args.port}/{target.name}", flush=True)
     print(f"Saving edits atomically to {target}", flush=True)
     try:

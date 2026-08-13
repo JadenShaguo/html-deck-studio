@@ -75,14 +75,23 @@ English summary: HTML Deck Studio turns raw topics, notes, screenshots, document
 
 - 将所有 CSS、JS、SVG 和图片嵌入一个 HTML。
 - 保留可点击目录进度条、页面标题提示、前进/后退、全屏、键盘导航和演讲者备注。
-- 保留编辑模式：
-  - SVG 外的主要页面元素可拖拽。
-  - 文本可直接编辑。
-  - 文本框可调整宽度和高度。
+- 保留轻量双态编辑模式：
+  - 直接双击打开 HTML 或作为普通静态网页分享时，只显示播放态，不显示编辑入口，也没有键盘编辑入口。
+  - 只有通过 `scripts/preview.sh <html>` 启动本地服务后，服务端注入 `window.__HTML_DECK_STUDIO_LOCAL__=true`，页面右上角才显示“修改”按钮并启用保存。
+  - 使用编辑系统 v2 的显式图层模型：重要元素必须带 `data-editable`、`data-layer-id` 和 `data-layer-name`。
+  - 图片、视频、按钮、卡片、标题、正文和结论条应拆成可单独选择的原子图层。
+  - 布局容器、左右栏、整页分组使用 `data-editable="group"`，默认加 `data-edit-locked="true"`，避免误拖整组。
+  - SVG 复杂图示默认作为一个 `data-editable="svg"` 图层；不要把 SVG 内部每个 path 都暴露成普通拖拽图层。
+  - 普通点击应命中最深层可编辑元素；需要选择父级分组时使用图层面板或 Alt + 点击。
+  - 文本可直接编辑，文本框可调整宽度和高度。
+  - 图层面板必须显示当前页父子级关系，支持选择具体图层后再拖拽或微调。
+  - 属性面板至少支持 X、Y、宽、高、锁定/解锁和重置当前图层。
   - 选中元素后方向键微调；非编辑状态下上下左右键切页。
-  - “保存”按钮在右侧，通过本地服务原子覆盖当前 HTML。
-  - 不提供“导出 HTML”按钮。
+  - “保存到源码”按钮在右侧，通过本地服务原子覆盖当前 HTML。
+  - 本地保存服务不可用时，必须显示保存状态；直接打开或公开分享态不提供编辑入口。
+  - 不在页面内提供“导出 HTML”按钮；需要公开发布纯播放版时，使用 `scripts/export_viewer.py deck.html deck.viewer.html`。
 - 新内容使用语义化元素和稳定 class；不要用绝对定位堆砌整页。
+- 新内容使用稳定 `data-layer-id`，不要依赖 DOM 顺序生成编辑 ID；同一文件中 `data-layer-id` 不得重复。
 - 复杂关系优先在独立 SVG 的 `viewBox` 坐标系中实现。
 - 工程细则以 `references/html-engineering.md` 为准。
 
@@ -128,6 +137,7 @@ English summary: HTML Deck Studio turns raw topics, notes, screenshots, document
 - 页面数量、演讲时长建议与已验证范围。
 - 重要数据口径或尚未验证的限制。
 - 本地编辑服务的访问地址（若已启动）。
+- 公开纯播放版路径（若已运行 `export_viewer.py`）。
 
 用户要求部署时，使用当前环境可用的静态站点部署工具。部署前必须让用户明确提供目标平台要求的元数据，不得从主题或文件名推断。部署后同时验证平台索引 URL 和服务器返回的真实文件 URL；如果索引失效，交付已验证的真实文件地址。
 

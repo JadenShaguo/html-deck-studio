@@ -388,6 +388,16 @@
       color:var(--orange);
       font:750 12px/1 var(--mono);
     }
+    .edit-toolbar .edit-help{
+      max-width:260px;
+      padding-left:0;
+      color:var(--muted);
+      font:600 12px/1.2 var(--sans);
+      letter-spacing:0;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
     .edit-toolbar button{
       height:30px;
       padding:0 12px;
@@ -403,8 +413,195 @@
       background:var(--orange);
       color:white;
     }
+    .edit-toolbar #saveCurrentHtml:disabled{
+      border-color:var(--line);
+      background:var(--paper-2);
+      color:var(--muted);
+      cursor:not-allowed;
+    }
+    #editToggle{
+      width:auto;
+      min-width:62px;
+      padding:0 13px;
+      border-radius:999px;
+      gap:6px;
+      font-size:13px;
+      font-weight:750;
+    }
+    #editToggle svg{
+      width:16px;
+      height:16px;
+    }
+    #editToggle span{line-height:1}
+    .save-status{
+      max-width:190px;
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.2;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .save-status.ready{color:var(--aqua)}
+    .save-status.unavailable{color:var(--orange)}
+    .layer-panel{
+      position:absolute;
+      z-index:68;
+      top:70px;
+      right:64px;
+      width:300px;
+      max-height:650px;
+      display:none;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(251,251,248,.98);
+      box-shadow:0 0 24px rgba(30,30,24,.12);
+      overflow:hidden;
+    }
+    .edit-mode .layer-panel{display:block}
+    .layer-panel-head{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+    }
+    .layer-panel-head b{
+      font-size:13px;
+      letter-spacing:.08em;
+      color:var(--orange);
+      font-family:var(--mono);
+    }
+    .layer-panel-head span{
+      color:var(--muted);
+      font-size:12px;
+    }
+    .layer-tree{
+      max-height:590px;
+      overflow:auto;
+      padding:8px;
+    }
+    .layer-item{
+      width:100%;
+      display:flex;
+      align-items:center;
+      gap:8px;
+      min-height:32px;
+      border:0;
+      border-radius:8px;
+      background:transparent;
+      color:var(--ink);
+      text-align:left;
+      cursor:pointer;
+      font-size:13px;
+    }
+    .layer-item:hover{background:var(--paper-2)}
+    .layer-item.active{background:var(--orange-soft);color:var(--orange)}
+    .layer-type{
+      flex:0 0 auto;
+      min-width:44px;
+      border:1px solid var(--line);
+      border-radius:999px;
+      padding:2px 6px;
+      color:var(--muted);
+      font:700 10px/1.2 var(--mono);
+      text-align:center;
+    }
+    .layer-item.active .layer-type{border-color:var(--orange);color:var(--orange)}
+    .layer-name{
+      min-width:0;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      white-space:nowrap;
+    }
+    .layer-lock{
+      margin-left:auto;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .inspector-panel{
+      position:absolute;
+      z-index:68;
+      top:735px;
+      right:64px;
+      width:300px;
+      display:none;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:rgba(251,251,248,.98);
+      box-shadow:0 0 24px rgba(30,30,24,.1);
+      overflow:hidden;
+    }
+    .edit-mode .inspector-panel{display:block}
+    .inspector-head{
+      padding:12px 14px;
+      border-bottom:1px solid var(--line);
+    }
+    .inspector-head b{
+      display:block;
+      color:var(--orange);
+      font:700 12px/1.3 var(--mono);
+      letter-spacing:.08em;
+    }
+    .inspector-head span{
+      display:block;
+      margin-top:4px;
+      color:var(--muted);
+      font-size:12px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .inspector-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:8px;
+      padding:12px 14px;
+    }
+    .inspector-grid label{
+      display:grid;
+      gap:4px;
+      color:var(--muted);
+      font:700 11px/1.2 var(--mono);
+    }
+    .inspector-grid input{
+      width:100%;
+      height:30px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:var(--paper);
+      color:var(--ink);
+      padding:0 8px;
+      font:600 13px var(--mono);
+    }
+    .inspector-grid input:disabled{
+      color:var(--muted);
+      background:var(--paper-2);
+    }
+    .inspector-actions{
+      display:flex;
+      gap:8px;
+      padding:0 14px 14px;
+    }
+    .inspector-actions button{
+      flex:1;
+      height:30px;
+      border:1px solid var(--line);
+      border-radius:8px;
+      background:var(--paper);
+      color:var(--ink);
+      cursor:pointer;
+      font-size:12px;
+    }
+    .inspector-actions button:disabled{
+      color:var(--muted);
+      background:var(--paper-2);
+      cursor:not-allowed;
+    }
     .edit-unit{position:relative}
     .edit-mode .edit-unit{cursor:move}
+    .edit-mode [data-edit-locked="true"]{cursor:not-allowed}
     .edit-mode [contenteditable="true"]{
       cursor:text;
       outline:1px dashed rgba(244,106,59,.35);
@@ -419,6 +616,23 @@
       cursor:move;
     }
     .edit-selection.show{display:block}
+    .edit-selection::after{
+      content:attr(data-layer-name);
+      position:absolute;
+      left:0;
+      top:calc(100% + 8px);
+      max-width:260px;
+      padding:5px 8px;
+      border-radius:8px;
+      background:var(--orange);
+      color:white;
+      font-size:12px;
+      line-height:1.2;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      box-shadow:0 8px 18px rgba(244,106,59,.22);
+    }
     .edit-resize-handle{
       position:absolute;
       width:14px;
@@ -446,6 +660,12 @@
       transition:.18s ease;
     }
     .edit-toast.show{opacity:1;transform:none}
+    .deck:not(.local-edit-available) #editToggle{display:none}
+    .deck:not(.local-edit-available) .edit-toolbar,
+    .deck:not(.local-edit-available) .layer-panel,
+    .deck:not(.local-edit-available) .inspector-panel,
+    .deck:not(.local-edit-available) .edit-selection,
+    .deck:not(.local-edit-available) .edit-toast{display:none!important}
   </style>
 </head>
 <body>
@@ -454,26 +674,26 @@
 
     <section class="slide title-cover" data-title="分享封面" data-note="用 10–15 秒交代身份、主题和唯一核心结论，不展开背景。">
       <div class="title-main">
-        <div class="eyebrow edit-unit">TOPIC · ORGANIZATION · VERSION</div>
-        <h1 class="edit-unit">[分享主题第一行]<br><span>[分享主题第二行]</span></h1>
-        <p class="title-sub edit-unit">[一句话主线：因为什么问题，把什么改造成什么，从而得到什么价值。]</p>
+        <div class="eyebrow edit-unit" data-editable="text" data-layer-id="p1-kicker" data-layer-name="封面标签">TOPIC · ORGANIZATION · VERSION</div>
+        <h1 class="edit-unit" data-editable="text" data-layer-id="p1-title" data-layer-name="封面主标题">[分享主题第一行]<br><span>[分享主题第二行]</span></h1>
+        <p class="title-sub edit-unit" data-editable="text" data-layer-id="p1-subtitle" data-layer-name="封面主线">[一句话主线：因为什么问题，把什么改造成什么，从而得到什么价值。]</p>
       </div>
       <footer class="title-meta">
-        <span class="edit-unit"><b>[分享人]</b>｜[角色]</span>
-        <span class="edit-unit">[关键词 A] × [关键词 B] × [关键词 C]</span>
+        <span class="edit-unit" data-editable="text" data-layer-id="p1-speaker" data-layer-name="分享人信息"><b>[分享人]</b>｜[角色]</span>
+        <span class="edit-unit" data-editable="text" data-layer-id="p1-keywords" data-layer-name="封面关键词">[关键词 A] × [关键词 B] × [关键词 C]</span>
       </footer>
     </section>
 
     <section class="slide" data-title="[内容页名称]" data-note="[填写本页讲解重点、转场和预计用时。]">
       <header class="head">
-        <div class="edit-unit">
+        <div class="edit-unit" data-editable="group" data-edit-locked="true" data-layer-id="p2-title-group" data-layer-name="标题组">
           <div class="eyebrow">01 / SECTION LABEL</div>
           <h2>[填写本页唯一主标题]</h2>
         </div>
-        <p class="edit-unit">[填写一句补充解释；它不能重复主标题。]</p>
+        <p class="edit-unit" data-editable="text" data-layer-id="p2-head-note" data-layer-name="右侧说明">[填写一句补充解释；它不能重复主标题。]</p>
       </header>
       <div class="tension-grid">
-        <section class="pain-chain edit-unit">
+        <section class="pain-chain edit-unit" data-editable="card" data-layer-id="p2-left-card" data-layer-name="左侧问题卡片">
           <h3>[模块标题 A]</h3>
           <div class="pain-list">
             <article class="pain-item">
@@ -490,24 +710,24 @@
             </article>
           </div>
         </section>
-        <section class="evidence-panel edit-unit">
+        <section class="evidence-panel edit-unit" data-editable="card" data-layer-id="p2-right-card" data-layer-name="右侧证据卡片">
           <div class="eyebrow">KEY MESSAGE</div>
           <strong>[填写重点结论]</strong>
           <p>[填写支撑结论的事实、解释或来源。]</p>
         </section>
       </div>
-      <div class="claim edit-unit">[填写本页收束句，使用<strong>一个重点短语。</strong>]</div>
+      <div class="claim edit-unit" data-editable="text" data-layer-id="p2-claim" data-layer-name="底部结论">[填写本页收束句，使用<strong>一个重点短语。</strong>]</div>
     </section>
 
     <section class="slide" data-title="[图示页名称]" data-note="[按图的阅读顺序填写讲解备注。]">
       <header class="head">
-        <div class="edit-unit">
+        <div class="edit-unit" data-editable="group" data-edit-locked="true" data-layer-id="p3-title-group" data-layer-name="标题组">
           <div class="eyebrow">02 / DIAGRAM</div>
           <h2>[填写图示页唯一主标题]</h2>
         </div>
-        <p class="edit-unit">[填写图的阅读方式、范围或关键说明。]</p>
+        <p class="edit-unit" data-editable="text" data-layer-id="p3-head-note" data-layer-name="右侧说明">[填写图的阅读方式、范围或关键说明。]</p>
       </header>
-      <div class="visual edit-unit">
+      <div class="visual edit-unit" data-editable="svg" data-layer-id="p3-flow-svg" data-layer-name="流程图 SVG">
         <svg viewBox="0 0 1460 560" role="img" aria-labelledby="system-title">
           <title id="system-title">通用节点与反馈路径 SVG 占位示例</title>
           <defs>
@@ -552,25 +772,26 @@
           <path d="M1330 350V500Q1330 522 1308 522H600Q580 522 580 500V402" class="svg-flow"/>
         </svg>
       </div>
-      <div class="claim edit-unit">[填写图示结论，突出<strong>最重要的关系。</strong>]</div>
+      <div class="claim edit-unit" data-editable="text" data-layer-id="p3-claim" data-layer-name="图示结论">[填写图示结论，突出<strong>最重要的关系。</strong>]</div>
     </section>
 
     <section class="slide title-cover" data-title="致谢" data-note="复述唯一结论，不新增观点。">
       <div class="title-main">
-        <div class="eyebrow edit-unit">THANK YOU</div>
-        <h1 class="edit-unit">谢谢。<span>[复述核心结论]</span></h1>
-        <p class="title-sub edit-unit">[一句面向未来的收束：让本次改变成为下一次交付的默认能力。]</p>
+        <div class="eyebrow edit-unit" data-editable="text" data-layer-id="p4-kicker" data-layer-name="致谢标签">THANK YOU</div>
+        <h1 class="edit-unit" data-editable="text" data-layer-id="p4-title" data-layer-name="致谢标题">谢谢。<span>[复述核心结论]</span></h1>
+        <p class="title-sub edit-unit" data-editable="text" data-layer-id="p4-subtitle" data-layer-name="致谢收束">[一句面向未来的收束：让本次改变成为下一次交付的默认能力。]</p>
       </div>
       <footer class="title-meta">
-        <span class="edit-unit"><b>[分享人]</b>｜[主题]</span>
-        <span class="edit-unit">Q &amp; A</span>
+        <span class="edit-unit" data-editable="text" data-layer-id="p4-speaker" data-layer-name="致谢署名"><b>[分享人]</b>｜[主题]</span>
+        <span class="edit-unit" data-editable="text" data-layer-id="p4-qa" data-layer-name="问答提示">Q &amp; A</span>
       </footer>
     </section>
 
     <nav class="timeline" id="timeline" aria-label="幻灯片目录与进度"></nav>
     <div class="controls" aria-label="幻灯片控制">
-      <button class="nav" id="editToggle" type="button" aria-label="编辑模式" data-tip="编辑模式 E" aria-pressed="false">
+      <button class="nav" id="editToggle" type="button" aria-label="修改" data-tip="修改" aria-pressed="false">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4l11-11-4-4L4 16v4ZM13.5 6.5l4 4"></path></svg>
+        <span>修改</span>
       </button>
       <button class="nav" id="prev" type="button" aria-label="上一页" data-tip="上一页">
         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m10 6-6 6 6 6M5 12h15"></path></svg>
@@ -584,9 +805,35 @@
     </div>
     <div class="edit-toolbar" id="editToolbar" aria-label="编辑工具栏">
       <span>编辑模式</span>
+      <span class="edit-help">选图层后拖拽；方向键微调，Shift 加速</span>
       <button type="button" id="resetSlide">重置本页</button>
-      <button type="button" id="saveCurrentHtml">保存</button>
+      <button type="button" id="downloadCurrentHtml">下载 HTML</button>
+      <button type="button" id="saveCurrentHtml">保存到源码</button>
+      <span class="save-status" id="saveStatus">保存服务：检测中</span>
     </div>
+    <aside class="layer-panel" id="layerPanel" aria-label="当前页图层">
+      <div class="layer-panel-head">
+        <b>LAYERS</b>
+        <span id="layerCount">0 个图层</span>
+      </div>
+      <div class="layer-tree" id="layerTree"></div>
+    </aside>
+    <aside class="inspector-panel" id="inspectorPanel" aria-label="图层属性">
+      <div class="inspector-head">
+        <b>INSPECTOR</b>
+        <span id="inspectorLayerName">未选择图层</span>
+      </div>
+      <div class="inspector-grid">
+        <label>X <input id="propX" type="number" step="1" disabled></label>
+        <label>Y <input id="propY" type="number" step="1" disabled></label>
+        <label>W <input id="propW" type="number" step="1" disabled></label>
+        <label>H <input id="propH" type="number" step="1" disabled></label>
+      </div>
+      <div class="inspector-actions">
+        <button type="button" id="toggleLayerLock" disabled>锁定</button>
+        <button type="button" id="resetLayer" disabled>重置图层</button>
+      </div>
+    </aside>
     <div class="edit-selection" id="editSelection" aria-hidden="true">
       <i class="edit-resize-handle" data-resize="w"></i>
       <i class="edit-resize-handle" data-resize="e"></i>
@@ -609,16 +856,33 @@
       var noteText=document.getElementById("noteText");
       var selection=document.getElementById("editSelection");
       var toast=document.getElementById("editToast");
+      var layerTree=document.getElementById("layerTree");
+      var layerCount=document.getElementById("layerCount");
+      var saveStatus=document.getElementById("saveStatus");
+      var saveButton=document.getElementById("saveCurrentHtml");
+      var downloadButton=document.getElementById("downloadCurrentHtml");
+      var inspectorLayerName=document.getElementById("inspectorLayerName");
+      var propX=document.getElementById("propX");
+      var propY=document.getElementById("propY");
+      var propW=document.getElementById("propW");
+      var propH=document.getElementById("propH");
+      var toggleLayerLockButton=document.getElementById("toggleLayerLock");
+      var resetLayerButton=document.getElementById("resetLayer");
       var active=0;
       var currentScale=1;
+      var localEditAvailable=window.__HTML_DECK_STUDIO_LOCAL__===true;
       var editMode=false;
       var selectedUnit=null;
-      var storageKey="html-deck-studio-editor-v1";
+      var saveServiceAvailable=false;
+      var storageKey="html-deck-studio-editor-v2";
       var editState={units:{},texts:{}};
       var dragState=null;
       var toastTimer=null;
 
-      try{editState=JSON.parse(localStorage.getItem(storageKey))||editState}catch(error){editState={units:{},texts:{}}}
+      deck.classList.toggle("local-edit-available",localEditAvailable);
+      try{
+        editState=localEditAvailable?(JSON.parse(localStorage.getItem(storageKey))||editState):editState
+      }catch(error){editState={units:{},texts:{}}}
 
       function fitDeck(){
         var gapX=32;
@@ -641,6 +905,7 @@
         noteText.textContent=slides[active].dataset.note||"";
         if(writeHash!==false){history.replaceState(null,"","#"+(active+1))}
         clearSelection();
+        renderLayerPanel();
       }
 
       function buildTimeline(){
@@ -662,28 +927,192 @@
 
       function saveState(){localStorage.setItem(storageKey,JSON.stringify(editState))}
 
+      function activeSlide(){return slides[active]}
+
       function editableUnits(slide){
-        return [].slice.call(slide.querySelectorAll([
-          ":scope>.title-main>*",
-          ":scope>.title-meta>*",
-          ":scope>.head>div",
-          ":scope>.head>p",
-          ":scope>.visual",
-          ":scope>.claim",
-          ".tension-grid>.edit-unit"
-        ].join(","))).filter(function(element,index,array){return array.indexOf(element)===index});
+        return [].slice.call(slide.querySelectorAll("[data-editable]"))
+          .filter(function(element,index,array){return array.indexOf(element)===index});
       }
 
       function textNodes(slide){
-        return [].slice.call(slide.querySelectorAll("h1,h2,h3,p,b,strong,span,.eyebrow,.claim"));
+        return [].slice.call(slide.querySelectorAll('[data-editable="text"]'))
+          .filter(function(element){return !element.closest("svg")});
+      }
+
+      function readableLayerName(element){
+        if(element.dataset.layerName){return element.dataset.layerName}
+        var text=(element.textContent||"").replace(/\s+/g," ").trim();
+        if(text){return text.slice(0,32)}
+        return element.dataset.editable||element.tagName.toLowerCase();
+      }
+
+      function normalizeLayer(element,slideIndex,index){
+        var type=element.dataset.editable||"group";
+        if(!element.dataset.layerId){
+          element.dataset.layerId="s"+(slideIndex+1)+"-"+type+"-"+(index+1);
+        }
+        if(!element.dataset.layerName){
+          element.dataset.layerName=readableLayerName(element);
+        }
+        element.classList.add("edit-unit");
+        element.dataset.editId=element.dataset.layerId;
+      }
+
+      function addImplicitTextLayers(slide,slideIndex){
+        var candidates=[].slice.call(slide.querySelectorAll("h1,h2,h3,p,b,strong,span,.eyebrow,.claim"));
+        var count=0;
+        candidates.forEach(function(element){
+          if(element.closest("svg")){return}
+          if(element.dataset.editable){return}
+          if(element.parentElement&&element.parentElement.closest('[data-editable="text"]')){return}
+          element.dataset.editable="text";
+          element.dataset.layerId="s"+(slideIndex+1)+"-text-auto-"+(++count);
+          element.dataset.layerName=readableLayerName(element);
+          element.classList.add("edit-unit");
+        });
+      }
+
+      function isLocked(unit){
+        return unit&&unit.dataset.editLocked==="true";
+      }
+
+      function layerDepth(element,slide){
+        var depth=0;
+        var node=element.parentElement;
+        while(node&&node!==slide){
+          if(node.matches&&node.matches("[data-editable]")){depth+=1}
+          node=node.parentElement;
+        }
+        return depth;
+      }
+
+      function renderLayerPanel(){
+        if(!localEditAvailable||!layerTree){return}
+        var slide=activeSlide();
+        var layers=editableUnits(slide);
+        layerTree.replaceChildren();
+        layerCount.textContent=layers.length+" 个图层";
+        layers.forEach(function(layer){
+          var item=document.createElement("button");
+          item.type="button";
+          item.className="layer-item";
+          item.dataset.targetLayer=layer.dataset.layerId;
+          item.style.paddingLeft=(10+layerDepth(layer,slide)*16)+"px";
+          item.setAttribute("aria-label","选择图层："+readableLayerName(layer));
+          var type=document.createElement("span");
+          type.className="layer-type";
+          type.textContent=(layer.dataset.editable||"item").toUpperCase();
+          var name=document.createElement("span");
+          name.className="layer-name";
+          name.textContent=readableLayerName(layer);
+          item.appendChild(type);
+          item.appendChild(name);
+          if(isLocked(layer)){
+            var lock=document.createElement("span");
+            lock.className="layer-lock";
+            lock.textContent="锁定";
+            item.appendChild(lock);
+          }
+          item.addEventListener("click",function(){
+            if(!editMode){toggleEdit(true)}
+            selectUnit(layer);
+          });
+          layerTree.appendChild(item);
+        });
+        syncLayerPanelSelection();
+      }
+
+      function syncLayerPanelSelection(){
+        if(!layerTree){return}
+        var id=selectedUnit&&(selectedUnit.dataset.layerId||selectedUnit.dataset.editId);
+        layerTree.querySelectorAll(".layer-item").forEach(function(item){
+          item.classList.toggle("active",Boolean(id&&item.dataset.targetLayer===id));
+        });
+        updateInspector();
+      }
+
+      function setInspectorEnabled(enabled){
+        [propX,propY,propW,propH,toggleLayerLockButton,resetLayerButton].forEach(function(control){
+          control.disabled=!enabled;
+        });
+      }
+
+      function updateInspector(){
+        if(!localEditAvailable||!inspectorLayerName){return}
+        if(!selectedUnit){
+          inspectorLayerName.textContent="未选择图层";
+          [propX,propY,propW,propH].forEach(function(input){input.value=""});
+          toggleLayerLockButton.textContent="锁定";
+          setInspectorEnabled(false);
+          return;
+        }
+        var state=unitState(selectedUnit);
+        var rect=selectedUnit.getBoundingClientRect();
+        inspectorLayerName.textContent=readableLayerName(selectedUnit)+" · "+(selectedUnit.dataset.editable||"item");
+        propX.value=Math.round(state.x||0);
+        propY.value=Math.round(state.y||0);
+        propW.value=Math.round(state.width||rect.width/currentScale);
+        propH.value=Math.round(state.height||rect.height/currentScale);
+        toggleLayerLockButton.textContent=isLocked(selectedUnit)?"解锁":"锁定";
+        setInspectorEnabled(true);
+        var locked=isLocked(selectedUnit);
+        [propX,propY,propW,propH].forEach(function(input){input.disabled=locked});
+      }
+
+      function applyInspectorValues(){
+        if(!selectedUnit||isLocked(selectedUnit)){return}
+        var state=unitState(selectedUnit);
+        state.x=Number(propX.value)||0;
+        state.y=Number(propY.value)||0;
+        state.width=Math.max(80,Number(propW.value)||80);
+        state.height=Math.max(36,Number(propH.value)||36);
+        applyUnitState(selectedUnit,state);
+        saveState();
+      }
+
+      function toggleSelectedLayerLock(){
+        if(!selectedUnit){return}
+        selectedUnit.dataset.editLocked=isLocked(selectedUnit)?"false":"true";
+        renderLayerPanel();
+        selectUnit(selectedUnit);
+        showToast(isLocked(selectedUnit)?"已锁定当前图层":"已解锁当前图层");
+      }
+
+      function resetSelectedLayer(){
+        if(!selectedUnit){return}
+        var id=selectedUnit.dataset.layerId||selectedUnit.dataset.editId;
+        delete editState.units[id];
+        selectedUnit.dataset.editX=0;
+        selectedUnit.dataset.editY=0;
+        selectedUnit.style.transform="";
+        selectedUnit.style.width="";
+        selectedUnit.style.height="";
+        selectedUnit.style.maxWidth="";
+        saveState();
+        updateSelection();
+        updateInspector();
+        showToast("已重置当前图层");
+      }
+
+      function findLayerFromEvent(event,slide){
+        var layers=[];
+        var node=event.target;
+        while(node&&node!==slide&&node!==deck){
+          if(node.matches&&node.matches("[data-editable]")){layers.push(node)}
+          node=node.parentElement;
+        }
+        if(!layers.length){return null}
+        if(event.altKey&&layers.length>1){return layers[1]}
+        return layers.find(function(layer){return !isLocked(layer)})||layers[0];
       }
 
       function initializeEditor(){
+        if(!localEditAvailable){return}
         slides.forEach(function(slide,slideIndex){
+          addImplicitTextLayers(slide,slideIndex);
           editableUnits(slide).forEach(function(element,index){
-            var id="s"+(slideIndex+1)+"-u"+index;
-            element.classList.add("edit-unit");
-            element.dataset.editId=id;
+            normalizeLayer(element,slideIndex,index);
+            var id=element.dataset.layerId;
             var state=editState.units[id];
             if(state){
               element.dataset.editX=state.x||0;
@@ -710,6 +1139,10 @@
       }
 
       function toggleEdit(force){
+        if(!localEditAvailable){
+          showToast("请通过 scripts/preview.sh 启动本地服务后再编辑");
+          return;
+        }
         editMode=typeof force==="boolean"?force:!editMode;
         deck.classList.toggle("edit-mode",editMode);
         document.getElementById("editToggle").setAttribute("aria-pressed",String(editMode));
@@ -720,21 +1153,26 @@
           });
         });
         if(!editMode){clearSelection()}
+        showToast(editMode?"已进入编辑模式：点击图层或从右侧面板选择":"已退出编辑模式");
       }
 
       function selectUnit(unit){
         if(!editMode||!unit){return}
         selectedUnit=unit;
+        selection.dataset.layerName=readableLayerName(unit);
         selection.classList.add("show");
         selection.setAttribute("aria-hidden","false");
         updateSelection();
+        syncLayerPanelSelection();
       }
 
       function clearSelection(){
         selectedUnit=null;
         selection.classList.remove("show");
+        selection.removeAttribute("data-layer-name");
         selection.removeAttribute("style");
         selection.setAttribute("aria-hidden","true");
+        syncLayerPanelSelection();
       }
 
       function updateSelection(){
@@ -748,7 +1186,7 @@
       }
 
       function unitState(unit){
-        var id=unit.dataset.editId;
+        var id=unit.dataset.layerId||unit.dataset.editId;
         if(!editState.units[id]){editState.units[id]={x:0,y:0}}
         return editState.units[id];
       }
@@ -760,10 +1198,15 @@
         if(state.width){unit.style.width=state.width+"px";unit.style.maxWidth="none"}
         if(state.height){unit.style.height=state.height+"px"}
         updateSelection();
+        updateInspector();
       }
 
       function startPointerDrag(event,mode,handle){
         if(!selectedUnit){return}
+        if(isLocked(selectedUnit)){
+          showToast("该分组已锁定，可选中查看但不能拖拽");
+          return;
+        }
         event.preventDefault();
         var state=unitState(selectedUnit);
         var rect=selectedUnit.getBoundingClientRect();
@@ -843,24 +1286,41 @@
         if(document.activeElement&&document.activeElement.blur){document.activeElement.blur()}
         toggleEdit(false);
         var clone=document.documentElement.cloneNode(true);
+        clone.querySelectorAll("#htmlDeckStudioLocalFlag").forEach(function(element){element.remove()});
         var clonedDeck=clone.querySelector("#deck");
+        clonedDeck.classList.remove("local-edit-available");
         clonedDeck.classList.remove("edit-mode");
-        clone.querySelectorAll('[contenteditable="true"]').forEach(function(element){element.setAttribute("contenteditable","false")});
+        clone.querySelectorAll("[contenteditable]").forEach(function(element){element.removeAttribute("contenteditable")});
+        clone.querySelectorAll("[spellcheck]").forEach(function(element){element.removeAttribute("spellcheck")});
+        clone.querySelectorAll("[data-edit-id]").forEach(function(element){element.removeAttribute("data-edit-id")});
+        clone.querySelectorAll("[data-edit-text-id]").forEach(function(element){element.removeAttribute("data-edit-text-id")});
+        clone.querySelectorAll('[data-edit-locked="false"]').forEach(function(element){element.removeAttribute("data-edit-locked")});
+        clone.querySelectorAll("[style]").forEach(function(element){
+          if(!element.getAttribute("style").trim()){element.removeAttribute("style")}
+        });
         clone.querySelector("#timeline").replaceChildren();
         var clonedSelection=clone.querySelector("#editSelection");
         clonedSelection.classList.remove("show");
         clonedSelection.removeAttribute("style");
+        var clonedLayerTree=clone.querySelector("#layerTree");
+        if(clonedLayerTree){clonedLayerTree.replaceChildren()}
         clone.querySelector("#speakerNotes").classList.remove("show");
         clone.querySelector("#editToast").classList.remove("show");
         var clonedSaveButton=clone.querySelector("#saveCurrentHtml");
         clonedSaveButton.disabled=false;
-        clonedSaveButton.textContent="保存";
+        clonedSaveButton.textContent="保存到源码";
+        var clonedSaveStatus=clone.querySelector("#saveStatus");
+        if(clonedSaveStatus){clonedSaveStatus.textContent="保存服务：检测中";clonedSaveStatus.className="save-status"}
         return "<!doctype html>\n"+clone.outerHTML;
       }
 
       async function saveCurrentHtml(){
-        var button=document.getElementById("saveCurrentHtml");
+        var button=saveButton;
         var previous=button.textContent;
+        if(!saveServiceAvailable){
+          showToast("当前不是本地保存服务环境，请使用“下载 HTML”保存结果");
+          return;
+        }
         button.disabled=true;
         button.textContent="保存中…";
         try{
@@ -881,10 +1341,57 @@
         }
       }
 
+      async function downloadCurrentHtml(){
+        try{
+          var html=await buildSavedHtml();
+          var blob=new Blob([html],{type:"text/html;charset=utf-8"});
+          var url=URL.createObjectURL(blob);
+          var link=document.createElement("a");
+          var base=(document.title||"deck").replace(/[^\w\u4e00-\u9fff-]+/g,"-").replace(/^-|-$/g,"")||"deck";
+          link.href=url;
+          link.download=base+".html";
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+          showToast("已生成当前 HTML 下载");
+        }catch(error){
+          showToast("下载失败："+error.message);
+        }
+      }
+
+      function setSaveServiceStatus(available,message){
+        saveServiceAvailable=available;
+        saveStatus.textContent=message;
+        saveStatus.classList.toggle("ready",available);
+        saveStatus.classList.toggle("unavailable",!available);
+        saveButton.disabled=!available;
+        saveButton.title=available?"保存编辑结果到当前 HTML 源文件":"需要通过 scripts/preview.sh 启动本地服务";
+      }
+
+      async function detectSaveService(){
+        if(!localEditAvailable){
+          setSaveServiceStatus(false,"保存服务：仅本地预览可用");
+          return;
+        }
+        try{
+          var response=await fetch("/__ppt_editor_status__",{cache:"no-store"});
+          var result=await response.json();
+          if(response.ok&&result&&result.ok){
+            setSaveServiceStatus(true,"保存服务：已连接");
+            return;
+          }
+          throw new Error("status not ok");
+        }catch(error){
+          setSaveServiceStatus(false,"保存服务：未连接");
+        }
+      }
+
       slides.forEach(function(slide){
         slide.addEventListener("pointerdown",function(event){
-          if(!editMode){return}
-          var unit=event.target.closest(".edit-unit");
+          if(!localEditAvailable||!editMode){return}
+          if(event.target.closest(".edit-selection")){return}
+          var unit=findLayerFromEvent(event,slide);
           if(!unit||!slide.contains(unit)){clearSelection();return}
           selectUnit(unit);
         });
@@ -903,12 +1410,20 @@
       document.getElementById("next").addEventListener("click",function(){showSlide(active+1,true)});
       document.getElementById("fullscreen").addEventListener("click",toggleFullscreen);
       document.getElementById("resetSlide").addEventListener("click",resetCurrentSlide);
-      document.getElementById("saveCurrentHtml").addEventListener("click",saveCurrentHtml);
+      saveButton.addEventListener("click",saveCurrentHtml);
+      downloadButton.addEventListener("click",downloadCurrentHtml);
+      [propX,propY,propW,propH].forEach(function(input){
+        input.addEventListener("change",applyInspectorValues);
+        input.addEventListener("keydown",function(event){
+          if(event.key==="Enter"){applyInspectorValues();input.blur()}
+        });
+      });
+      toggleLayerLockButton.addEventListener("click",toggleSelectedLayerLock);
+      resetLayerButton.addEventListener("click",resetSelectedLayer);
 
       document.addEventListener("keydown",function(event){
         var editingText=event.target&&event.target.isContentEditable;
         if(event.key==="Escape"){clearSelection();return}
-        if((event.key==="e"||event.key==="E")&&!editingText){event.preventDefault();toggleEdit();return}
         if((event.key==="n"||event.key==="N")&&!editingText){
           event.preventDefault();
           notePanel.classList.toggle("show");
@@ -940,6 +1455,7 @@
 
       buildTimeline();
       initializeEditor();
+      detectSaveService();
       fitDeck();
       var initial=Number(location.hash.slice(1));
       showSlide(Number.isFinite(initial)&&initial>0?initial-1:0,false);

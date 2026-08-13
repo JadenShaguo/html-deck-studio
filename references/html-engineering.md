@@ -59,9 +59,10 @@ document.documentElement.style.setProperty("--deck-scale",String(Math.max(.1,sca
 
 ## 4. 编辑模式
 
-编辑模式只处理 SVG 外的页面元素。要求：
+编辑模式只处理 SVG 外的页面元素。它采用轻量双态：直接打开 HTML 或普通静态部署时是播放态；只有通过 `scripts/preview.sh` 启动本地服务后，服务端注入 `window.__HTML_DECK_STUDIO_LOCAL__=true`，右上角才显示“修改”按钮并启用保存。要求：
 
-- 点击铅笔或按 `E` 切换。
+- 本地服务运行态下，点击右上角“修改”按钮切换编辑模式。
+- 非本地服务运行态下，不显示“修改”入口，也不读取编辑缓存覆盖页面。
 - 主要单元自动添加 `.edit-unit` 和稳定 `data-edit-id`。
 - 文本节点设置 `contenteditable=true`。
 - 点击单元显示选框。
@@ -108,7 +109,7 @@ python3 scripts/serve_editable_ppt.py \
 
 按钮文案只写“保存”，放在编辑工具栏最右侧。不要提供“导出 HTML”按钮。
 
-远端静态部署可保留编辑界面，但无法覆盖服务器源文件；不要承诺远端保存。
+远端静态部署和直接分享默认保持播放态，不显示编辑界面；不要承诺远端保存。
 
 ## 6. 图片与 SVG
 

@@ -1,5 +1,25 @@
 # Changelog / 变更记录
 
+## 0.4.1 - 2026-08-13
+
+- Added lightweight dual-state editing: directly opened HTML stays in viewer mode, while the local preview server injects the edit runtime flag.
+  新增轻量双态编辑：直接打开 HTML 保持播放态，本地预览服务运行时注入编辑运行态标记。
+- Replaced the keyboard edit shortcut with a local-only "修改" button in the upper-right controls.
+  将键盘编辑入口改为仅本地运行态显示的右上角“修改”按钮。
+- Prevented the injected local edit flag from being written back into saved source HTML.
+  保存源码时清理本地运行态标记，避免污染分享用 HTML。
+- Added viewer-only export and dual-state end-to-end test scripts.
+  新增公开纯播放版导出脚本和双态编辑端到端测试脚本。
+
+## 0.4.0 - 2026-08-12
+
+- Added editor v2 with explicit layer metadata, layer tree selection, a lightweight inspector, lock/reset controls, save-service status, and HTML download fallback.
+  新增编辑系统 v2：显式图层元数据、图层树选择、轻量属性面板、锁定/重置控制、保存服务状态与 HTML 下载兜底。
+- Added a local save-service status endpoint for detecting whether source-file save is available.
+  新增本地保存服务状态接口，用于判断当前环境是否可写回源码文件。
+- Extended static validation with layer-id, editable-type, v2 editor UI, and legacy edit-unit checks.
+  扩展静态检查，覆盖图层 ID、可编辑类型、v2 编辑器 UI 与旧 edit-unit 兼容提示。
+
 ## 0.3.1 - 2026-08-05
 
 - Simplified the root `README.md` into a lightweight bilingual entry page.

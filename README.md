@@ -16,6 +16,7 @@
 cp assets/html-ppt-template.html deck.html
 ./scripts/check.sh deck.html
 ./scripts/preview.sh deck.html
+./scripts/export_viewer.py deck.html deck.viewer.html
 ```
 
 Open / 打开：
@@ -27,7 +28,7 @@ http://127.0.0.1:4173/deck.html
 ## What Is Included / 项目内容
 
 - `SKILL.md`: Codex Skill workflow.
-- `assets/html-ppt-template.html`: editable HTML presentation template.
+- `assets/html-ppt-template.html`: lightweight dual-state HTML presentation template. It opens as a normal viewer by default and enables editing only when served by the local preview server.
 - `references/`: story, design, engineering, archetype, and QA guides.
 - `scripts/`: static checker and local editable preview server.
 
